@@ -5,22 +5,47 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4">Available Products</h2>
-    <div class="row">
+<div class="container my-5">
+    <h2 class="mb-4 text-center fw-bold">Welcome to GIC Grocery Store</h2>
+    <div class="row g-4">
         @foreach (var product in Model)
         {
-            <div class="col-md-3 mb-4">
-                <div class="card h-100">
-                    @* <img src="@product.ImageUrl" class="card-img-top" alt="@product.Title" /> *@
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Title</h5>
-                        <p class="card-text text-muted">@product.Description</p>
-                        <p class="fw-bold">$@product.Price</p>
-                        <a asp-area="" asp-controller="Products" asp-route-id="@product.Id" asp-action="Index" class="btn btn-primary">View Details</a>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card shadow-sm border-0 rounded-3 h-100 product-card">
+                    <!-- Product Image -->
+                    @* <img src="@product.ImageUrl" class="card-img-top" alt="@product.Title" style="height:220px; object-fit:cover;"> *@
+
+                    <!-- Card Body -->
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title mb-1">@product.Title</h5>
+                        <p class="card-text text-muted small mb-2" style="min-height: 40px;">@product.Description</p>
+
+                        <h5 class="text-success mb-3">$@product.Price</h5>
+
+                        <!-- Buttons -->
+                        <div class="mt-auto d-flex justify-content-between">
+                            <a asp-area="" asp-controller="Products" asp-route-id="@product.Id" asp-action="Index"
+                               class="btn btn-outline-primary btn-sm">
+                                View Details
+                            </a>
+                            <a href="#" class="btn btn-primary btn-sm">
+                                <i class="bi bi-cart-plus"></i> Add
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         }
     </div>
 </div>
+
+<style>
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+</style>

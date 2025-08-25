@@ -369,6 +369,7 @@ Migrations/*.cs
 
 # Ignore appsettings.Development.json
 appsettings.Development.json
+appsettings.json
 
 # Ignore csproj
 *.csproj

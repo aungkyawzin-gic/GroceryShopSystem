@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using GroceryShopSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GroceryShopSystem.Controllers
@@ -13,8 +14,14 @@ namespace GroceryShopSystem.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         public IActionResult Index()
         {
+            if (User.IsInRole("Admin"))
+                ViewData["Layout"] = "_LayoutAdmin";
+            else
+                ViewData["Layout"] = "_LayoutUser";
+
             return View();
         }
 

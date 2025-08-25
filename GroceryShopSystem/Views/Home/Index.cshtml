@@ -1,5 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    Layout = ViewData["Layout"] as string;
+    ViewData["Title"] = "Home";
+}
+
+<h2>Welcome</h2>
+
+@if (User.IsInRole("Admin"))
+{
+    <p>You are logged in as Admin.</p>
+}
+else
+{
+    <p>You are logged in as a regular User.</p>
 }
 
 <div class="text-center">

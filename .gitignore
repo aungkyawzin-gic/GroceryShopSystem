@@ -367,5 +367,5 @@ Migrations/
 
 Migrations/*.cs
 
-# Ignore Program.cs
-Program.cs
+# Ignore appsettings.Development.json
+appsettings.Development.json

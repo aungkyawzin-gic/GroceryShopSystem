@@ -14,14 +14,15 @@ namespace GroceryShopSystem.Controllers
             _logger = logger;
         }
 
-        [Authorize]
+        //[Authorize]
         public IActionResult Index()
-        {
-            if (User.IsInRole("Admin"))
-                ViewData["Layout"] = "_LayoutAdmin";
-            else
-                ViewData["Layout"] = "_LayoutUser";
+        {          
 
+            //if (User.IsInRole("Admin"))
+            //    ViewData["Layout"] = "_LayoutAdmin";
+            //else
+            //    ViewData["Layout"] = "_LayoutUser";
+            ViewData["Layout"] = "_LayoutAdmin";
             return View();
         }
 

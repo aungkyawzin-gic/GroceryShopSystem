@@ -361,3 +361,11 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Ignore EF Core migrations
+Migrations/
+
+Migrations/*.cs
+
+# Ignore Program.cs
+Program.cs

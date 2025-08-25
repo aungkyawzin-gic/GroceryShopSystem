@@ -1,20 +1,39 @@
+using AuthorizeTesting.Data;
 using GroceryShopSystem.Data;
+using GroceryShopSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//Oracle connection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+// Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseOracle(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+//Add Identity
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+	.AddEntityFrameworkStores<ApplicationDbContext>()
+	.AddDefaultTokenProviders();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+
+// Seed roles and Admin
+using (var scope = app.Services.CreateScope())
+{
+	var services = scope.ServiceProvider;
+	var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+	var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+	await DbInitializer.SeedRolesAndAdmin(userManager, roleManager);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -33,6 +52,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

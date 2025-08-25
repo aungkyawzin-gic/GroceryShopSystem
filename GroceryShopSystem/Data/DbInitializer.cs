@@ -1,7 +1,8 @@
-﻿using GroceryShopSystem.Models;
+﻿using AuthorizeTesting.Data;
+using GroceryShopSystem.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace AuthorizeTesting.Data
+namespace GroceryShopSystem.Data
 {
 	public static class DbInitializer
 	{

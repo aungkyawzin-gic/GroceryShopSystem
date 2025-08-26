@@ -21,7 +21,7 @@ namespace GroceryShopSystem.Controllers.Customer
             var cart = new Cart
             {
                 Id = 1,
-                UserId = 1,
+                UserId = "1",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };

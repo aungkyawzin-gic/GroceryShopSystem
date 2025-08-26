@@ -372,4 +372,4 @@ appsettings.Development.json
 appsettings.json
 
 # Ignore csproj
-*.csproj
+# *.csproj

@@ -22,7 +22,7 @@ namespace GroceryShopSystem.Data
 			}
 
 			// Seed default admin user
-			var adminEmail = "admin@example.com";
+			var adminEmail = "admin@gmail.com";
 			var adminUser = await userManager.FindByEmailAsync(adminEmail);
 			if (adminUser == null)
 			{

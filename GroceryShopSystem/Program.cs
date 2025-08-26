@@ -23,6 +23,15 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+// Configure Identity options
+builder.Services.ConfigureApplicationCookie(options =>
+{
+	options.ExpireTimeSpan = TimeSpan.FromDays(1); // Remember me for 1 days
+	options.SlidingExpiration = true; // renew cookie on activity
+	options.LoginPath = "/Account/Login";
+	options.LogoutPath = "/Account/Logout";
+});
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 

@@ -16,7 +16,9 @@ namespace GroceryShopSystem.Controllers
         [HttpGet("{id}/Details")]
         public async Task<IActionResult> Index(int id)
         {
-            var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == id);
+            var product = await _context.Product
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.Id == id);
             return View(product);
         }
     }

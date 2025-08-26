@@ -27,11 +27,11 @@
 
                             <p><strong>Available Quantity:</strong> @Model.Quantity</p>
 
-                            <p>
+                            @* <p>
                                 <span class="badge bg-@(Model.IsActive ? "success" : "danger")">
                                     @(Model.IsActive ? "Available" : "Out of Stock")
                                 </span>
-                            </p>
+                            </p> *@
 
                             <div class="d-flex gap-3 mt-4">
                                 <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">

@@ -53,6 +53,7 @@ namespace GroceryShopSystem.Controllers.Account
 			//User not found
 			TempData["Error"] = "Wrong credentials. Please try again";
 			return View(loginViewModel);
+		}
 
 		public IActionResult Index()
 		{

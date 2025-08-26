@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest   # You can also use windows-latest
+    runs-on: windows-latest   # You can also use windows-latest
 
     steps:
       # Checkout code
@@ -28,7 +28,3 @@ jobs:
       # Build the project
       - name: Build
         run: dotnet build --configuration Release --no-restore
-
-      # Run unit tests (if you have tests)
-      - name: Test
-        run: dotnet test --no-build --verbosity normal

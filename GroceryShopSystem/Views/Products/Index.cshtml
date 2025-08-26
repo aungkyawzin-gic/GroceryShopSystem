@@ -29,7 +29,7 @@
 
                             <p>
                                 <span class="badge bg-@(Model.IsActive ? "success" : "danger")">
-                                    @(Model.IsActive ? "Available" : "Out of Stock")
+                                    @(Model.IsActive ? "Available" : "Out of Stock!")
                                 </span>
                             </p>
 
@@ -37,7 +37,7 @@
                                 <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
                                     <i class="bi bi-arrow-left"></i> Back to List
                                 </a>
-                                <a href="#" class="btn btn-primary">
+                                <a asp-controller="Cart" asp-action="Index" class="btn btn-primary">
                                     <i class="bi bi-cart"></i> Add to Cart
                                 </a>
                             </div>

@@ -23,7 +23,7 @@ namespace GroceryShopSystem.Controllers
                 ViewData["Layout"] = "_LayoutAdmin";
             else if (User.IsInRole("User"))
                 ViewData["Layout"] = "_LayoutUser";
-            return View(await _context.Product.ToListAsync());
+            return View(await _context.Products.ToListAsync());
         }
 
         public IActionResult Privacy()

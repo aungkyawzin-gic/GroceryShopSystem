@@ -17,7 +17,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseOracle(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 //Add Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()

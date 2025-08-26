@@ -31,7 +31,7 @@ namespace GroceryShopSystem.Controllers.Customer
                 return NotFound();
             }
 
-            return View($"~/Views/Products/Index.cshtml", product);
+            return View($"~/Views/Products/Details.cshtml", product);
 
         }
     }

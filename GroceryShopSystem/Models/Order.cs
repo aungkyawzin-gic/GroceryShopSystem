@@ -9,36 +9,41 @@ namespace GroceryShopSystem.Models
         [Key]
         public int Id { get; set; }   // Django auto-generated id
 
-        [MaxLength(20)]
-        public string OrderNo { get; set; }   // nullable by default
+		[MaxLength(20)]
+		public string OrderNo { get; set; }
 
-        
-        [Required]
-        public int UserId { get; set; }
+		// Foreign key to Identity User
+		[Required]
+		[ForeignKey("ApplicationUser")]
+		public string UserId { get; set; }   // Identity User Id is string
 
-        [Required]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+		public ApplicationUser? User { get; set; }
 
-        [Required]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+		[Required]
+		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Required]
-        [MaxLength(20)]
-        public string Status { get; set; } // create, delivered
-        
+		[Required]
+		public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        [Column(TypeName = "decimal(10,2)")]
-        public decimal TotalPrice { get; set; } = 0.00m;
+		[Required]
+		[MaxLength(20)]
+		public string Status { get; set; } // create, delivered
 
-        [Column(TypeName = "decimal(10,2)")]
-        public decimal ShippingPrice { get; set; } = 0.00m;
+		[Column(TypeName = "decimal(10,2)")]
+		public decimal TotalPrice { get; set; } = 0.00m;
 
-        [Column(TypeName = "decimal(10,2)")]
-        public decimal Tax { get; set; } = 0.00m;
+		[Column(TypeName = "decimal(10,2)")]
+		public decimal ShippingPrice { get; set; } = 0.00m;
 
-        [Column(TypeName = "decimal(10,2)")]
-        public decimal GrandTotalPrice { get; set; } = 0.00m;
+		[Column(TypeName = "decimal(10,2)")]
+		public decimal Tax { get; set; } = 0.00m;
 
-        public string Remark { get; set; }        
-    }
+		[Column(TypeName = "decimal(10,2)")]
+		public decimal GrandTotalPrice { get; set; } = 0.00m;
+
+		public string Remark { get; set; }
+
+		// 🔑 Add navigation property
+		public ICollection<OrderItem> OrderItems { get; set; }
+	}
 }

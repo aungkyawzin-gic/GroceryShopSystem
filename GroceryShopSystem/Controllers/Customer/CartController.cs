@@ -21,7 +21,7 @@ namespace GroceryShopSystem.Controllers.Customer
             var cart = new Cart
             {
                 Id = 1,
-                UserId = 1,
+                UserId = "1",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -37,7 +37,6 @@ namespace GroceryShopSystem.Controllers.Customer
                 ImageUrl = "/images/apple.jpg",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                IsActive = true,
                 Quantity = 100
             };
 
@@ -51,7 +50,6 @@ namespace GroceryShopSystem.Controllers.Customer
                 ImageUrl = "/images/banana.jpg",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                IsActive = true,
                 Quantity = 50
             };
 

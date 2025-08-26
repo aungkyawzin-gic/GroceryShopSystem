@@ -1,21 +1,29 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using GroceryShopSystem.Data;
 using GroceryShopSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroceryShopSystem.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ApplicationDbContext _context;
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        //[Authorize]
+        public async Task<IActionResult> Index()
         {
-            return View();
+            if (User.IsInRole("Admin"))
+                ViewData["Layout"] = "_LayoutAdmin";
+            else if (User.IsInRole("User"))
+                ViewData["Layout"] = "_LayoutUser";
+            return View(await _context.Products.ToListAsync());
         }
 
         public IActionResult Privacy()

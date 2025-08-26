@@ -3,8 +3,11 @@ using GroceryShopSystem.Data;
 using GroceryShopSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+using Microsoft.OpenApi.Models;
+
+// to install package
+//Install-Package Swashbuckle.AspNetCore
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,15 +17,21 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseOracle(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 //Add Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-	.AddEntityFrameworkStores<ApplicationDbContext>()
-	.AddDefaultTokenProviders();
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "GroceryShop API", Version = "v1" });
+});
+
 
 var app = builder.Build();
 
@@ -30,16 +39,20 @@ var app = builder.Build();
 // Seed roles and Admin
 using (var scope = app.Services.CreateScope())
 {
-	var services = scope.ServiceProvider;
-	var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-	var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-	await DbInitializer.SeedRolesAndAdmin(userManager, roleManager);
+    var services = scope.ServiceProvider;
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    await DbInitializer.SeedRolesAndAdmin(userManager, roleManager);
 }
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseMigrationsEndPoint();
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "GroceryShop API V1");
+    });
 }
 else
 {
@@ -60,5 +73,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.Run();

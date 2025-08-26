@@ -1,0 +1,54 @@
+﻿@model GroceryShopSystem.Models.Product
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="row g-0">
+                    <!-- Product Image -->
+                    <div class="col-md-5">
+                        <img src="@Model.ImageUrl" class="img-fluid rounded-start" alt="@Model.Title" style="height:100%; object-fit:cover;">
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="col-md-7">
+                        <div class="card-body p-4">
+                            <h2 class="card-title mb-3">@Model.Title</h2>
+                            <p class="text-muted mb-1">
+                                <strong>Category:</strong> @Model.Category.Title
+                            </p>
+                            <p class="card-text mb-3">@Model.Description</p>
+                            <h4 class="text-success mb-4">$@Model.Price</h4>
+
+                            <p><strong>Available Quantity:</strong> @Model.Quantity</p>
+
+                            <p>
+                                <span class="badge bg-@(Model.IsActive ? "success" : "danger")">
+                                    @(Model.IsActive ? "Available" : "Out of Stock")
+                                </span>
+                            </p>
+
+                            <div class="d-flex gap-3 mt-4">
+                                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Back to List
+                                </a>
+                                <a href="#" class="btn btn-primary">
+                                    <i class="bi bi-cart"></i> Add to Cart
+                                </a>
+                            </div>
+
+                            <hr class="my-4">
+                            <p class="text-muted small mb-0">
+                                Created: @Model.CreatedAt.ToString("MMM dd, yyyy") | Updated: @Model.UpdatedAt.ToString("MMM dd, yyyy")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,13 +1,18 @@
-﻿using GroceryShopSystem.Models;
+
+using GroceryShopSystem.Models;
 using GroceryShopSystem.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
+using Microsoft.AspNetCore.Mvc;
+
+
 namespace GroceryShopSystem.Controllers.Account
 {
 	public class AccountController : Controller
 	{
+
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly SignInManager<ApplicationUser> _signInManager;
 
@@ -48,6 +53,11 @@ namespace GroceryShopSystem.Controllers.Account
 			//User not found
 			TempData["Error"] = "Wrong credentials. Please try again";
 			return View(loginViewModel);
+
+		public IActionResult Index()
+		{
+			return View();
+
 		}
 	}
 }

@@ -37,7 +37,6 @@ namespace GroceryShopSystem.Controllers.Customer
                 ImageUrl = "/images/apple.jpg",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                IsActive = true,
                 Quantity = 100
             };
 
@@ -51,7 +50,6 @@ namespace GroceryShopSystem.Controllers.Customer
                 ImageUrl = "/images/banana.jpg",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                IsActive = true,
                 Quantity = 50
             };
 

@@ -10,8 +10,8 @@ namespace GroceryShopSystem.ViewModels
         public string ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-        //public bool IsActive { get; set; }
         public int Quantity { get; set; }
+        public IFormFile? ImageFile { get; set; }
     }
 
 }

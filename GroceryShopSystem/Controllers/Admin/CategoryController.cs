@@ -10,7 +10,7 @@ using GroceryShopSystem.Models;
 
 namespace GroceryShopSystem.Controllers.Admin
 {
-    [Route("Categories")]
+    [Route("Admin/Categories")]
     public class CategoryController : Controller
     {
 
@@ -27,14 +27,14 @@ namespace GroceryShopSystem.Controllers.Admin
         public async Task<IActionResult> Index()
         {
             //return View("~/Views/Admin/Category/Index.cshtml", await _context.Category.ToListAsync());
-            return View($"{AdminBase}Index.cshtml", await _context.Category.ToListAsync());
+            return View($"{AdminBase}Index.cshtml", await _context.Categories.ToListAsync());
         }
 
         // GET: admin/categories/5
         [HttpGet("{id}")]
         public async Task<IActionResult> Details(int id)
         {
-            var category = await _context.Category.FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _context.Categories.FirstOrDefaultAsync(m => m.Id == id);
             if (category == null) return NotFound();
             return View($"{AdminBase}Details.cshtml", category);
         }
@@ -53,7 +53,7 @@ namespace GroceryShopSystem.Controllers.Admin
         {
             if (ModelState.IsValid)
             {
-                if (_context.Category.Count(c => c.Title == category.Title) > 0)
+                if (_context.Categories.Count(c => c.Title == category.Title) > 0)
                 {
                     ModelState.AddModelError("Title", "This category name already exists.");
                     return View($"{AdminBase}Create.cshtml", category);
@@ -69,7 +69,7 @@ namespace GroceryShopSystem.Controllers.Admin
         [HttpGet("edit/{id}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var category = await _context.Category.FindAsync(id);
+            var category = await _context.Categories.FindAsync(id);
             if (category == null) return NotFound();
             return View($"{AdminBase}Edit.cshtml", category);
         }
@@ -85,7 +85,7 @@ namespace GroceryShopSystem.Controllers.Admin
             {
                 try
                 {
-                    if (_context.Category.Count(c => c.Title == category.Title) > 0)
+                    if (_context.Categories.Count(c => c.Title == category.Title) > 0)
                     {
                         ModelState.AddModelError("Title", "This category name already exists.");
                         return View($"{AdminBase}Create.cshtml", category);
@@ -107,7 +107,7 @@ namespace GroceryShopSystem.Controllers.Admin
         [HttpGet("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _context.Category.FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _context.Categories.FirstOrDefaultAsync(m => m.Id == id);
             if (category == null) return NotFound();
             return View($"{AdminBase}Delete.cshtml", category);
         }
@@ -117,8 +117,8 @@ namespace GroceryShopSystem.Controllers.Admin
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Category.FindAsync(id);
-            if (category != null) _context.Category.Remove(category);
+            var category = await _context.Categories.FindAsync(id);
+            if (category != null) _context.Categories.Remove(category);
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -126,7 +126,7 @@ namespace GroceryShopSystem.Controllers.Admin
 
         private bool CategoryExists(int id)
         {
-            return _context.Category.Any(e => e.Id == id);
+            return _context.Categories.Any(e => e.Id == id);
         }
     }
 }

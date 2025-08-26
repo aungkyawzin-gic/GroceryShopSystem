@@ -1,26 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using GroceryShopSystem.Data;
+﻿using GroceryShopSystem.Data;
 using GroceryShopSystem.Models;
 using GroceryShopSystem.Services;
+using GroceryShopSystem.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GroceryShopSystem.Controllers.Admin
 {
+    [Area("Admin")]
     [Route("Admin/Products")]
     public class ProductsController : Controller
     {
         private readonly ProductsApiServices _services;
-
+        private readonly ApplicationDbContext _context;
+       
         const string AdminBase = "~/Views/Admin/Products/";
 
-        public ProductsController(ProductsApiServices services)
+        public ProductsController(ProductsApiServices services, ApplicationDbContext context)
         {
             _services = services;
+            _context = context;
         }
 
         [HttpGet("")]
@@ -49,30 +48,68 @@ namespace GroceryShopSystem.Controllers.Admin
             return View($"{AdminBase}Details.cshtml", product);
         }
 
-        //// GET: ProductsView/Create
-        //[HttpGet("create")]
-        //public IActionResult Create()
-        //{
-        //    ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Title");
-        //    return View();
-        //}
+        // GET: ProductsView/Create
+        [HttpGet("create")]
+        public IActionResult Create()
+        {
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Title");
+            return View($"{AdminBase}Create.cshtml");
+        }
 
-        //// POST: ProductsView/Create
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost("create")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,CategoryId,Title,Description,Price,ImageUrl,CreatedAt,UpdatedAt,IsActive,Quantity")] Product product)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(product);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Title", product.CategoryId);
-        //    return View(product);
-        //}
+        // POST: ProductsView/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost("create")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ProductCreateViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            string? imageUrl = null;
+
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            {
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+                // Save file locally in wwwroot/uploads
+                var fileName = Path.GetFileName(model.ImageFile.FileName);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ImageFile.CopyToAsync(stream);
+                }
+
+                // URL that goes into DB
+                imageUrl = "/uploads/" + fileName;
+            }
+
+            // Map to Product for API
+            var product = new Product
+            {
+                Title = model.Title,
+                Price = model.Price,
+                Quantity = model.Quantity,
+                CategoryId = model.CategoryId,
+                Description = model.Description,
+                ImageUrl = imageUrl,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                IsActive = true
+            };
+
+            await _services.CreateProductAsync(product);
+
+            return RedirectToAction(nameof(Index));
+        }
+
 
         //// GET: ProductsView/Edit/5
         //[HttpGet("edit/{id}")]

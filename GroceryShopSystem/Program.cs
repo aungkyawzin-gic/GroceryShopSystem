@@ -1,6 +1,7 @@
 using AuthorizeTesting.Data;
 using GroceryShopSystem.Data;
 using GroceryShopSystem.Models;
+using GroceryShopSystem.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -32,6 +33,8 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "GroceryShop API", Version = "v1" });
 });
 
+// services info
+builder.Services.AddHttpClient<ProductsApiServices>();
 
 var app = builder.Build();
 

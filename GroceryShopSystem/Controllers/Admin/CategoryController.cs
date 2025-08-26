@@ -10,7 +10,7 @@ using GroceryShopSystem.Models;
 
 namespace GroceryShopSystem.Controllers.Admin
 {
-    [Route("Categories")]
+    [Route("Admin/Categories")]
     public class CategoryController : Controller
     {
 

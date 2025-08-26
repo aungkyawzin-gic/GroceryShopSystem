@@ -15,9 +15,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseOracle(connectionString));
 
-//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
-//builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 //Add Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationDbContext>()

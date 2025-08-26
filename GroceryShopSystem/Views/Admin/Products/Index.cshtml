@@ -40,6 +40,7 @@
                 @Html.DisplayNameFor(model => model.Quantity)
             </th>
             <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -72,6 +73,12 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Quantity)
             </td>
+             <td>
+                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                    {
+                        <img src="@item.ImageUrl" width="100" />
+                    }
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

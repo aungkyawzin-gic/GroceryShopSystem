@@ -10,8 +10,9 @@ namespace GroceryShopSystem.Models
 
         // One-to-One with Customer (User)
         [Required]
-        public int UserId { get; set; }
-        [ForeignKey("UserId")]
+		[ForeignKey("ApplicationUser")]
+		public string UserId { get; set; }
+        public ApplicationUser? User { get; set; }
         // TODO
         // After create user, User add yan        
 
@@ -19,7 +20,6 @@ namespace GroceryShopSystem.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Required]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-        
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;        
     }
 }

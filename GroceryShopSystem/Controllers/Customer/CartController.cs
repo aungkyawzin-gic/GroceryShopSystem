@@ -1,86 +1,81 @@
 ﻿using GroceryShopSystem.Models;
 using GroceryShopSystem.Services;
+using GroceryShopSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GroceryShopSystem.Controllers.Customer
 {
+    [Area("Customer")]
+    [Route("Customer/[controller]")]
     public class CartController : Controller
     {
-        private readonly ProductsApiServices _services;
+        private readonly CartApiServices _services;
 
-        public CartController(ProductsApiServices services)
+        public CartController(CartApiServices services)
         {
             _services = services;
         }
 
-        public IActionResult Index()
+        // GET: /Cart/Index
+        [HttpGet("")]
+        public async Task<IActionResult> Index()
         {
-            // Mock cart
-            var cart = new Cart
-            {
-                Id = 1,
-                UserId = "1",
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+            string userId = "f390c3c1-5f1e-42c0-8050-dcc4f06d1ec1"; // Replace with logged-in user's Id
+            IEnumerable<CartItem>? cartItems = null;
 
-            // Mock products
-            var product1 = new Product
+            try
             {
-                Id = 101,
-                CategoryId = 1,
-                Title = "Apple",
-                Price = 1.5m,
-                Description = "Fresh red apples",
-                ImageUrl = "/images/apple.jpg",
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                Quantity = 100
-            };
-
-            var product2 = new Product
+                cartItems = await _services.GetCartAsync(userId);
+            }
+            catch
             {
-                Id = 102,
-                CategoryId = 1,
-                Title = "Banana",
-                Price = 0.8m,
-                Description = "Ripe bananas",
-                ImageUrl = "/images/banana.jpg",
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                Quantity = 50
-            };
+                // fallback: empty cart
+                cartItems = new List<CartItem>();
+            }
 
-            // Mock cart items
-            var cartItems = new List<CartItem>
-            {
-                new CartItem
-                {
-                    Id = 1,
-                    CartId = cart.Id,
-                    Cart = cart,
-                    ProductId = product1.Id,
-                    Product = product1,
-                    Quantity = 3,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                },
-                new CartItem
-                {
-                    Id = 2,
-                    CartId = cart.Id,
-                    Cart = cart,
-                    ProductId = product2.Id,
-                    Product = product2,
-                    Quantity = 5,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                }
-            };
+            return View("~/Views/Cart/Index.cshtml", cartItems);
+        }
 
-            return View(cartItems);
+        // Optional: Add to cart example
+        [HttpPost("Add")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> Add(int productId, int quantity = 1)
+        {
+            string userId = "f390c3c1-5f1e-42c0-8050-dcc4f06d1ec1";
+            var newItem = new CartItemViewModel { ProductId = productId, Quantity = quantity };
+
+            var addedItem = await _services.AddCartItemAsync(userId, newItem);
+            if (addedItem != null)
+                return Json(new { success = true, message = "Item added to cart!" });
+            else
+                return Json(new { success = false, message = "Failed to add item." });
+        }
+
+        // Optional: Update quantity
+        [HttpPost("UpdateQuantity")]
+        public async Task<IActionResult> UpdateQuantity(int cartItemId, int quantity)
+        {
+            string userId = "1"; // Replace with logged-in user's Id
+
+            // Find productId for cartItemId if needed
+            // For simplicity, assume cartItemId = productId in this mock
+            bool success = await _services.UpdateCartItemQuantityAsync(userId, cartItemId, quantity);
+
+            if (!success) TempData["Error"] = "Failed to update quantity.";
+            return RedirectToAction("Index");
+        }
+
+        // Optional: Remove item
+        [HttpPost("Remove")]
+        public async Task<IActionResult> Remove(int cartItemId)
+        {
+            string userId = "1"; // Replace with logged-in user's Id
+            bool success = await _services.DeleteCartItemAsync(userId, cartItemId);
+
+            if (!success) TempData["Error"] = "Failed to remove item.";
+            return RedirectToAction("Index");
         }
     }
 }

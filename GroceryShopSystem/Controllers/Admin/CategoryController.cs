@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using GroceryShopSystem.Data;
+﻿using GroceryShopSystem.Data;
 using GroceryShopSystem.Models;
+using GroceryShopSystem.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace GroceryShopSystem.Controllers.Admin
+namespace GroceryShopSystem.Controllers.Api
 {
-    [Route("Admin/Categories")]
-    public class CategoryController : Controller
+    [Route("api/categories")]
+    [ApiController]
+    public class CategoryController : ControllerBase
     {
-
-        const string AdminBase = "~/Views/Admin/Category/";
         private readonly ApplicationDbContext _context;
 
         public CategoryController(ApplicationDbContext context)
@@ -22,111 +17,112 @@ namespace GroceryShopSystem.Controllers.Admin
             _context = context;
         }
 
-        // GET: admin/categories
-        [HttpGet("")]
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> GetCategories()
         {
-            //return View("~/Views/Admin/Category/Index.cshtml", await _context.Category.ToListAsync());
-            return View($"{AdminBase}Index.cshtml", await _context.Categories.ToListAsync());
+            var categories = await _context.Categories
+                .Select(c => new CategoryViewModel
+                {
+                    Id = c.Id,
+                    Title = c.Title,
+                    CreatedAt = c.CreatedAt,
+                    UpdatedAt = c.UpdatedAt
+                })
+                .ToListAsync();
+
+            return Ok(new
+            {
+                success = true,
+                count = categories.Count,
+                data = categories
+            });
         }
 
-        // GET: admin/categories/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> GetCategory(int id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null) return NotFound();
-            return View($"{AdminBase}Details.cshtml", category);
+            var category = await _context.Categories
+                .Where(c => c.Id == id)
+                .Select(c => new CategoryViewModel
+                {
+                    Id = c.Id,
+                    Title = c.Title,
+                    CreatedAt = c.CreatedAt,
+                    UpdatedAt = c.UpdatedAt
+                })
+                .FirstOrDefaultAsync();
+
+            if (category == null)
+                return NotFound(new { success = false, message = "Category not found." });
+
+            return Ok(new { success = true, data = category });
         }
 
-        // GET: admin/categories/create
-        [HttpGet("create")]
-        public IActionResult Create()
+        [HttpPost]
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateViewModel model)
         {
-            return View($"{AdminBase}Create.cshtml");
-        }
-
-        // POST: admin/categories/create
-        [HttpPost("create")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,CreatedAt,UpdatedAt")] Category category)
-        {
-            if (ModelState.IsValid)
+            if (_context.Categories.Any(c => c.Title == model.Title))
             {
-                if (_context.Categories.Count(c => c.Title == category.Title) > 0)
-                {
-                    ModelState.AddModelError("Title", "This category name already exists.");
-                    return View($"{AdminBase}Create.cshtml", category);
-                }
-                _context.Add(category);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return BadRequest(new { success = false, message = "This category name already exists." });
             }
-            return RedirectToAction(nameof(Index));
-        }
 
-        // GET: admin/categories/edit/5
-        [HttpGet("edit/{id}")]
-        public async Task<IActionResult> Edit(int id)
-        {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null) return NotFound();
-            return View($"{AdminBase}Edit.cshtml", category);
-        }
-
-        // POST: admin/categories/edit/5
-        [HttpPost("edit/{id}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,CreatedAt,UpdatedAt")] Category category)
-        {
-            if (id != category.Id) return NotFound();
-
-            if (ModelState.IsValid)
+            var category = new Category
             {
-                try
-                {
-                    if (_context.Categories.Count(c => c.Title == category.Title) > 0)
-                    {
-                        ModelState.AddModelError("Title", "This category name already exists.");
-                        return View($"{AdminBase}Create.cshtml", category);
-                    }
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.Id)) return NotFound();
-                    else throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return RedirectToAction(nameof(Index));
-        }
+                Title = model.Title,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-        // GET: admin/categories/delete/5
-        [HttpGet("delete/{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var category = await _context.Categories.FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null) return NotFound();
-            return View($"{AdminBase}Delete.cshtml", category);
-        }
-
-        // POST: admin/categories/delete/5
-        [HttpPost("delete/{id}"), ActionName("DeleteConfirmed")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null) _context.Categories.Remove(category);
-
+            _context.Categories.Add(category);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, new
+            {
+                success = true,
+                data = category
+            });
         }
 
-        private bool CategoryExists(int id)
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] Category category)
         {
-            return _context.Categories.Any(e => e.Id == id);
+            if (id != category.Id)
+                return BadRequest(new { success = false, message = "ID mismatch." });
+
+            if (_context.Categories.Any(c => c.Title == category.Title && c.Id != id))
+            {
+                return BadRequest(new { success = false, message = "This category name already exists." });
+            }
+
+            try
+            {
+                category.UpdatedAt = DateTime.UtcNow;
+                _context.Entry(category).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Categories.Any(e => e.Id == id))
+                    return NotFound(new { success = false, message = "Category not found." });
+                else
+                    throw;
+            }
+
+            return Ok(new { success = true, message = "Category updated successfully." });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null)
+                return NotFound(new { success = false, message = "Category not found." });
+
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { success = true, message = "Category deleted successfully." });
         }
     }
 }

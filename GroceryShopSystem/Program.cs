@@ -1,6 +1,7 @@
 using AuthorizeTesting.Data;
 using GroceryShopSystem.Data;
 using GroceryShopSystem.Models;
+using GroceryShopSystem.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -32,6 +33,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.LogoutPath = "/Account/Logout";
 });
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -41,6 +47,8 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "GroceryShop API", Version = "v1" });
 });
 
+// services info
+builder.Services.AddHttpClient<ProductsApiServices>();
 
 var app = builder.Build();
 

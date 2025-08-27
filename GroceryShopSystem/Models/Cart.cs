@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GroceryShopSystem.Models
@@ -10,9 +10,8 @@ namespace GroceryShopSystem.Models
 
         // One-to-One with Customer (User)
         [Required]
-		[ForeignKey("ApplicationUser")]
-		public string UserId { get; set; }
-        public ApplicationUser? User { get; set; }
+        public string UserId { get; set; }
+        [ForeignKey("UserId")]
         // TODO
         // After create user, User add yan        
 
@@ -20,6 +19,7 @@ namespace GroceryShopSystem.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Required]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;        
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        
     }
 }

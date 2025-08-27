@@ -1,4 +1,5 @@
-﻿@model GroceryShopSystem.Models.Product
+﻿@using GroceryShopSystem.ViewModels
+@model ProductCreateViewModel
 
 @{
     ViewData["Title"] = "Create Product";
@@ -38,15 +39,15 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="ImageUrl" class="form-label">Product Image</label>
-        <input asp-for="ImageUrl" type="file" class="form-control" />
-        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        <label asp-for="ImageFile" class="form-label">Product Image</label>
+        <input asp-for="ImageFile" type="file" class="form-control" />
+        <span asp-validation-for="ImageFile" class="text-danger"></span>
     </div>
 
-    <div class="form-check mb-3">
+    @* <div class="form-check mb-3">
         <input class="form-check-input" asp-for="IsActive" />
         <label class="form-check-label" asp-for="IsActive"></label>
-    </div>
+    </div> *@
 
     <button type="submit" class="btn btn-success me-2">Create</button>
     <a asp-action="Index" class="btn btn-secondary">Back to List</a>

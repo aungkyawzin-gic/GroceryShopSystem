@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace GroceryShopSystem.Data
 {
@@ -22,6 +23,8 @@ namespace GroceryShopSystem.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            //Map boolean columns to NUMBER(1), Product table
+            //builder.Entity<Product>().Property(p => p.IsActive).HasColumnType("NUMBER(1)");
 
             // Rename tables
             builder.Entity<ApplicationUser>(b => b.ToTable("Users"));

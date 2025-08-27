@@ -3,10 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GroceryShopSystem.Models
 {
-	public class Order
-	{
-		[Key]
-		public int Id { get; set; }
+    [Table("Orders")]
+    public class Order
+    {
+        [Key]
+        public int Id { get; set; }   // Django auto-generated id
 
 		[MaxLength(20)]
 		public string OrderNo { get; set; }

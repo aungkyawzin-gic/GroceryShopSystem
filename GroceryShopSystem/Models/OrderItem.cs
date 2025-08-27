@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GroceryShopSystem.Models
 {
+    [Table("OrderItems")]
     public class OrderItem
     {
         [Key]

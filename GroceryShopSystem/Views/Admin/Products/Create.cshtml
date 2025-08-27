@@ -52,7 +52,7 @@
         <!-- Right column: image upload & preview -->
         <div class="col-md-6">
             <div class="mb-3">
-                <label>Image Preview</label>
+                <label id="imgPreviewLbl" hidden>Image Preview</label>
                 <div>
                     <img id="imgPreview"
                          src="#"
@@ -86,6 +86,7 @@
                 var output = document.getElementById('imgPreview');
                 output.src = dataURL;
                 output.hidden = false;
+                document.getElementById('imgPreviewLbl').hidden = false;
             };
             if (input.files && input.files[0]) {
                 reader.readAsDataURL(input.files[0]);

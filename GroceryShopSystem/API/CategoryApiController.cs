@@ -4,15 +4,15 @@ using GroceryShopSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace GroceryShopSystem.Controllers.Api
+namespace GroceryShopSystem.API
 {
     [Route("api/categories")]
     [ApiController]
-    public class CategoryController : ControllerBase
+    public class CategoryApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public CategoryController(ApplicationDbContext context)
+        public CategoryApiController(ApplicationDbContext context)
         {
             _context = context;
         }

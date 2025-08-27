@@ -1,12 +1,12 @@
 ﻿using GroceryShopSystem.Data;
 using GroceryShopSystem.Models;
-using GroceryShopSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace GroceryShopSystem.API
 {
 	[Route("api/[controller]")]
+	[Route("api/carts")]
 	[ApiController]
 	public class CartsApiController : Controller
 	{
@@ -18,6 +18,7 @@ namespace GroceryShopSystem.API
 		}
 
 		// GET: api/Carts/{userId}
+		// GET: api/carts/{userId}
 		[HttpGet("{userId}")]
 		public async Task<ActionResult<IEnumerable<CartItem>>> GetCart(string userId)
 		{
@@ -36,8 +37,8 @@ namespace GroceryShopSystem.API
 		}
 
 		// POST: api/Carts/{userId}
+		// POST: api/carts/{userId}
 		[HttpPost("{userId}")]
-		public async Task<ActionResult<CartItem>> CreateCartItem(string userId, CartItemViewModel cartItemRequest)
 		{
 			// Find the user's cart
 			var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
@@ -100,6 +101,8 @@ namespace GroceryShopSystem.API
 
 		// PATCH: api/Carts/{userId}/product/{productId}
 		[HttpPatch("user/{userId}/product/{productId}")]
+		// PATCH: api/carts/{userId}/{productId}
+		[HttpPatch("{userId}/{productId}")]
 		public async Task<IActionResult> UpdateCartItemQuantity(string userId, int productId, [FromBody] int quantity)
 		{
 			// Find the cart item for the user and product
@@ -134,6 +137,8 @@ namespace GroceryShopSystem.API
 
 		// DELETE: api/Carts/{userId}/product/{productId}
 		[HttpDelete("user/{userId}/product/{productId}")]
+		// DELETE: api/carts/{userId}/{productId}
+		[HttpDelete("{userId}/{productId}")]
 		public async Task<IActionResult> DeleteCartItem(string userId, int productId)
 		{
 			// Find the cart item for the user and product
@@ -153,6 +158,8 @@ namespace GroceryShopSystem.API
 
 		//DELETE: api/Carts/{userId}/clear
 		[HttpDelete("user/{userId}/clear")]
+		//DELETE: api/carts/{userId}/clear
+		[HttpDelete("{userId}/clear")]
 		public async Task<IActionResult> ClearCart(string userId)
 		{
 			// Find all cart items for the user
@@ -171,6 +178,8 @@ namespace GroceryShopSystem.API
 
 		// DELETE: api/Carts/{userId}/{cardtId}
 		[HttpDelete("user/{userId}/cart")]
+		// DELETE: api/carts/{userId}/{cardtId}
+		[HttpDelete("{userId}/cart")]
 		public async Task<IActionResult> DeleteCart(string userId)
 		{
 			// Find the user's cart

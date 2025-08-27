@@ -6,67 +6,62 @@
 
 <h1>Details</h1>
 
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageUrl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedAt)
-        </dd>
-        @* <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsActive)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsActive)
-        </dd> *@
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Quantity)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Quantity)
-        </dd>
-    </dl>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="row g-0">
+                    <!-- Product Image -->
+                    <div class="col-md-5">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" class="img-fluid rounded-start" alt="@Model.Title" style="height:100%; object-fit:cover; " />
+                        }
+                        
+                        
+                        @* <img src="@Model.ImageUrl" class="img-fluid rounded-start" alt="@Model.Title" style="height:100%; object-fit:cover;"> *@
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="col-md-7">
+                        <div class="card-body p-4">
+                            <h2 class="card-title mb-3">@Model.Title</h2>
+                            <p class="text-muted mb-1">
+                                <strong>Category:</strong> @Model.Category.Title
+                            </p>
+                            <p class="card-text mb-3">@Model.Description</p>
+                            <h4 class="text-success mb-4">$@Model.Price</h4>
+
+                            <p><strong>Available Quantity:</strong> @Model.Quantity</p>
+
+                            @* <p>
+                                <span class="badge bg-@(Model.IsActive ? "success" : "danger")">
+                                    @(Model.IsActive ? "Available" : "Out of Stock!")
+                                </span>
+                            </p> *@
+
+                            <div class="d-flex gap-3 mt-4">
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Back to List
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">
+                                    <i class="bi bi-cart"></i> Edit
+                                </a>
+                            </div>
+
+                            <hr class="my-4">
+                            <p class="text-muted small mb-0">
+                                Created: @Model.CreatedAt.ToString("MMM dd, yyyy") | Updated: @Model.UpdatedAt.ToString("MMM dd, yyyy")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
+
+@* <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
-</div>
+</div> *@

@@ -13,9 +13,9 @@ namespace GroceryShopSystem.Models
 
         [Required]
         [Column("CategoryId")]
+        [ForeignKey("Categories")]
         public int CategoryId { get; set; }
 
-        [ForeignKey("CategoryId")]
         public Category Category { get; set; }
 
         [Required]
@@ -39,10 +39,6 @@ namespace GroceryShopSystem.Models
         [Required]
         [Column("UpdatedAt")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        //[Required]
-        //[Column("IsActive", TypeName = "NUMBER(1)")]
-        //public bool IsActive { get; set; }
 
         [Column("Quantity")]
         public int Quantity { get; set; }

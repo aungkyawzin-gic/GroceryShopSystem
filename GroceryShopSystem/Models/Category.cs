@@ -8,7 +8,6 @@ namespace GroceryShopSystem.Models
     {
         [Key]
         [Column("Id")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
@@ -23,8 +22,5 @@ namespace GroceryShopSystem.Models
         [Required]
         [Column("UpdatedAt")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        //// Optional: One-to-many navigation
-        //public ICollection<Product> Products { get; set; }
     }
 }

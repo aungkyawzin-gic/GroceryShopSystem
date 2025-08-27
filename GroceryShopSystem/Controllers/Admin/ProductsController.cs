@@ -188,44 +188,38 @@ namespace GroceryShopSystem.Controllers.Admin
             return RedirectToAction(nameof(Index));            
         }
 
-        //// GET: ProductsView/Delete/5
-        //[HttpGet("delete/{id}")]
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // GET: ProductsView/Delete/5
+        [HttpGet("delete/{id}")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    var product = await _context.Products
-        //        .Include(p => p.Category)
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (product == null)
-        //    {
-        //        return NotFound();
-        //    }
+            var product = await _productServices.GetProductAsync(id.Value);
+            if (product == null)
+            {
+                return NotFound();
+            }
 
-        //    return View(product);
-        //}
+            return View($"{AdminBase}Delete.cshtml", product);
+        }
 
-        //// POST: ProductsView/Delete/5
-        //[HttpPost("delete/{id}"), ActionName("DeleteConfirmed")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    var product = await _context.Products.FindAsync(id);
-        //    if (product != null)
-        //    {
-        //        _context.Products.Remove(product);
-        //    }
+        // POST: ProductsView/Delete/5
+        [HttpPost("delete/{id}"), ActionName("DeleteConfirmed")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var isDelSuccess = await _productServices.DeleteProductAsync(id);
+            if (isDelSuccess)
+            {
+                return RedirectToAction(nameof(Index));
 
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
+            }
+            // TODO
+            return NotFound(); // later change to appropirate code
+        }
 
-        //private bool ProductExists(int id)
-        //{
-        //    return _context.Products.Any(e => e.Id == id);
-        //}
     }
 }

@@ -4,7 +4,7 @@ using GroceryShopSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace GroceryShopSystem.Controllers.Api
+namespace GroceryShopSystem.API
 {
     [Route("api/categories")]
     [ApiController]

@@ -24,7 +24,7 @@ namespace GroceryShopSystem.Models
         [Column("UpdatedAt")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        // Optional: One-to-many navigation
-        public ICollection<Product> Products { get; set; }
+        //// Optional: One-to-many navigation
+        //public ICollection<Product> Products { get; set; }
     }
 }

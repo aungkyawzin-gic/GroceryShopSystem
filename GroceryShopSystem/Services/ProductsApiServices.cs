@@ -6,7 +6,7 @@ namespace GroceryShopSystem.Services
     {
         private readonly HttpClient _httpClient;
 
-        const string API_BASE = "api/productsApi";
+        const string API_BASE = "api/products";
 
         public ProductsApiServices(HttpClient httpClient)
         {

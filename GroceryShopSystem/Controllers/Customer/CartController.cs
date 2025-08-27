@@ -57,7 +57,7 @@ namespace GroceryShopSystem.Controllers.Customer
         [HttpPost("UpdateQuantity")]
         public async Task<IActionResult> UpdateQuantity(int cartItemId, int quantity)
         {
-            string userId = "1"; // Replace with logged-in user's Id
+            string userId = "f390c3c1-5f1e-42c0-8050-dcc4f06d1ec1"; // Replace with logged-in user's Id
 
             // Find productId for cartItemId if needed
             // For simplicity, assume cartItemId = productId in this mock
@@ -71,7 +71,7 @@ namespace GroceryShopSystem.Controllers.Customer
         [HttpPost("Remove")]
         public async Task<IActionResult> Remove(int cartItemId)
         {
-            string userId = "1"; // Replace with logged-in user's Id
+            string userId = "f390c3c1-5f1e-42c0-8050-dcc4f06d1ec1"; // Replace with logged-in user's Id
             bool success = await _services.DeleteCartItemAsync(userId, cartItemId);
 
             if (!success) TempData["Error"] = "Failed to remove item.";

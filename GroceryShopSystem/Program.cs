@@ -33,6 +33,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.LogoutPath = "/Account/Logout";
 });
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 

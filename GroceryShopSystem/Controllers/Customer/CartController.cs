@@ -1,5 +1,6 @@
 ﻿using GroceryShopSystem.Models;
 using GroceryShopSystem.Services;
+using GroceryShopSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -43,7 +44,7 @@ namespace GroceryShopSystem.Controllers.Customer
         public async Task<IActionResult> Add(int productId, int quantity = 1)
         {
             string userId = "f390c3c1-5f1e-42c0-8050-dcc4f06d1ec1";
-            var newItem = new CartItem { ProductId = productId, Quantity = quantity };
+            var newItem = new CartItemViewModel { ProductId = productId, Quantity = quantity };
 
             var addedItem = await _services.AddCartItemAsync(userId, newItem);
             if (addedItem != null)

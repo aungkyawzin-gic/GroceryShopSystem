@@ -90,5 +90,74 @@ namespace GroceryShopSystem.Controllers.Admin
             return RedirectToAction(nameof(Index));
 
         }
+
+        // GET: ProductsView/Edit/5
+        [HttpGet("edit/{id}")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var category = await _services.GetCategoryAsync(id.Value);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            
+            return View($"{AdminBase}Edit.cshtml", category);
+        }
+
+        // POST: ProductsView/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost("edit/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Category model)
+        {
+
+            if (!ModelState.IsValid)
+            {                
+                return View($"{AdminBase}Edit.cshtml", model);
+            }
+            await _services.UpdateCategoryAsync(id, model);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: ProductsView/Delete/5
+        [HttpGet("delete/{id}")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var category = await _services.GetCategoryAsync(id.Value);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            return View($"{AdminBase}Delete.cshtml", category);
+        }
+
+        // POST: ProductsView/Delete/5
+        [HttpPost("delete/{id}"), ActionName("DeleteConfirmed")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var isDelSuccess = await _services.DeleteCategoryAsync(id);
+            if (isDelSuccess)
+            {
+                return RedirectToAction(nameof(Index));
+
+            }
+            // TODO
+            return NotFound(); // later change to appropirate code
+        }
     }
 }

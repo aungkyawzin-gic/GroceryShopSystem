@@ -1,4 +1,5 @@
 ﻿using GroceryShopSystem.Models;
+using GroceryShopSystem.ViewModels;
 using System.Net.Http.Json;
 
 namespace GroceryShopSystem.Services
@@ -20,7 +21,7 @@ namespace GroceryShopSystem.Services
 		}
 
 		// POST: api/Carts/{userId} - Add item to cart
-		public async Task<CartItem?> AddCartItemAsync(string userId, CartItem cartItem)
+		public async Task<CartItem?> AddCartItemAsync(string userId, CartItemViewModel cartItem)
 		{
 			var response = await _httpClient.PostAsJsonAsync($"api/CartsApi/{userId}", cartItem);
 			if (response.IsSuccessStatusCode)

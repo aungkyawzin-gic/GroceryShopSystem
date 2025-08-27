@@ -1,5 +1,6 @@
 ﻿using GroceryShopSystem.Data;
 using GroceryShopSystem.Models;
+using GroceryShopSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,7 +37,7 @@ namespace GroceryShopSystem.API
 
 		// POST: api/Carts/{userId}
 		[HttpPost("{userId}")]
-		public async Task<ActionResult<CartItem>> CreateCartItem(string userId, CartItem cartItemRequest)
+		public async Task<ActionResult<CartItem>> CreateCartItem(string userId, CartItemViewModel cartItemRequest)
 		{
 			// Find the user's cart
 			var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);

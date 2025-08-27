@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroceryShopSystem.API
 {
-    [Route("api/[controller]")]
+    [Route("api/products")]
     [ApiController]
     public class ProductsApiController : ControllerBase
     {

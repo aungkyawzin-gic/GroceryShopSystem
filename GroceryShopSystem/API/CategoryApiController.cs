@@ -61,7 +61,9 @@ namespace GroceryShopSystem.API
         [HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateViewModel model)
         {
-            if (_context.Categories.Any(c => c.Title == model.Title))
+            var existingCategory = await _context.Categories.FirstOrDefaultAsync(c => c.Title == model.Title);
+
+            if (existingCategory != null)
             {
                 return BadRequest(new { success = false, message = "This category name already exists." });
             }

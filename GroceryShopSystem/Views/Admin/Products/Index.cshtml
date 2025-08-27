@@ -4,14 +4,17 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Products List</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<div class="d-flex justify-content-end">
+    <a asp-action="Create" class="btn btn-success">Create New</a>
+</div>
 <table class="table">
     <thead>
         <tr>
+            <th>
+                No
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Category)
             </th>
@@ -23,29 +26,21 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageUrl)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-            @* <th>
-                @Html.DisplayNameFor(model => model.IsActive)
-            </th> *@
+            </th>            
             <th>
                 @Html.DisplayNameFor(model => model.Quantity)
             </th>
             <th></th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+        @{
+            int no = 1; // start counter
+        }
+        @foreach (var item in Model) {
+
         <tr>
+            <td>@no</td>
             <td>
                 @Html.DisplayFor(modelItem => item.Category.Title)
             </td>
@@ -57,34 +52,16 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImageUrl)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedAt)
-            </td>
-            @* <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td> *@
+            </td>            
             <td>
                 @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-             <td>
-                    @if (!string.IsNullOrEmpty(item.ImageUrl))
-                    {
-                        <img src="@item.ImageUrl" width="100" />
-                    }
-                </td>
+            </td>            
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edit</a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
         </tr>
+            no++;
 }
     </tbody>
 </table>

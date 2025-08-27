@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroceryShopSystem.API
 {
-    [Route("api/[controller]")]
+    [Route("api/products")]
     [ApiController]
     public class ProductsApiController : ControllerBase
     {
@@ -42,6 +42,7 @@ namespace GroceryShopSystem.API
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
+            product.Category = null;
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 

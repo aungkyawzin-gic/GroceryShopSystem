@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroceryShopSystem.API
 {
-	[Route("api/[controller]")]
 	[Route("api/carts")]
 	[ApiController]
 	public class CartsApiController : Controller
@@ -17,7 +16,6 @@ namespace GroceryShopSystem.API
 			_context = context;
 		}
 
-		// GET: api/Carts/{userId}
 		// GET: api/carts/{userId}
 		[HttpGet("{userId}")]
 		public async Task<ActionResult<IEnumerable<CartItem>>> GetCart(string userId)
@@ -36,9 +34,9 @@ namespace GroceryShopSystem.API
 			return Ok(cartItems);
 		}
 
-		// POST: api/Carts/{userId}
 		// POST: api/carts/{userId}
 		[HttpPost("{userId}")]
+		public async Task<ActionResult<CartItem>> CreateCartItem(string userId, CartItem cartItemRequest)
 		{
 			// Find the user's cart
 			var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
@@ -99,8 +97,6 @@ namespace GroceryShopSystem.API
 			return Ok(new { message = "Item added to cart successfully." });
 		}
 
-		// PATCH: api/Carts/{userId}/product/{productId}
-		[HttpPatch("user/{userId}/product/{productId}")]
 		// PATCH: api/carts/{userId}/{productId}
 		[HttpPatch("{userId}/{productId}")]
 		public async Task<IActionResult> UpdateCartItemQuantity(string userId, int productId, [FromBody] int quantity)
@@ -135,8 +131,6 @@ namespace GroceryShopSystem.API
 			return Ok(cartItem);
 		}
 
-		// DELETE: api/Carts/{userId}/product/{productId}
-		[HttpDelete("user/{userId}/product/{productId}")]
 		// DELETE: api/carts/{userId}/{productId}
 		[HttpDelete("{userId}/{productId}")]
 		public async Task<IActionResult> DeleteCartItem(string userId, int productId)
@@ -156,8 +150,6 @@ namespace GroceryShopSystem.API
 			return Ok(new { message = "Cart item removed successfully." });
 		}
 
-		//DELETE: api/Carts/{userId}/clear
-		[HttpDelete("user/{userId}/clear")]
 		//DELETE: api/carts/{userId}/clear
 		[HttpDelete("{userId}/clear")]
 		public async Task<IActionResult> ClearCart(string userId)
@@ -176,8 +168,6 @@ namespace GroceryShopSystem.API
 			return Ok(new { message = "Cart cleared successfully." });
 		}
 
-		// DELETE: api/Carts/{userId}/{cardtId}
-		[HttpDelete("user/{userId}/cart")]
 		// DELETE: api/carts/{userId}/{cardtId}
 		[HttpDelete("{userId}/cart")]
 		public async Task<IActionResult> DeleteCart(string userId)

@@ -10,14 +10,14 @@ namespace GroceryShopSystem.Models
 
         // Foreign key for Cart
         [Required]
-        public int CartId { get; set; }
-        [ForeignKey("CartId")]
+		[ForeignKey("Carts")]
+		public int CartId { get; set; }
         public Cart Cart { get; set; }
 
         // Foreign key for Product
         [Required]
-        public int ProductId { get; set; }
-        [ForeignKey("ProductId")]
+		[ForeignKey("Products")]
+		public int ProductId { get; set; }
         public Product Product { get; set; }       
 
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1")]

@@ -1,0 +1,19 @@
+﻿@model GroceryShopSystem.ViewModels.UserViewModel
+@{
+    ViewData["Title"] = "Delete User";
+}
+
+<h2>Delete User</h2>
+
+<h4>Are you sure you want to delete this user?</h4>
+<div>
+    <h5>@Model.FullName</h5>
+    <p>Email: @Model.Email</p>
+    <p>Phone: @Model.PhoneNumber</p>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

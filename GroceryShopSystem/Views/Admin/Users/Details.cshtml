@@ -1,0 +1,25 @@
+﻿@model GroceryShopSystem.Models.ApplicationUser
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<h2>User Details</h2>
+
+<div>
+    <h4>@Model.FullName</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Email</dt>
+        <dd class="col-sm-10">@Model.Email</dd>
+
+        <dt class="col-sm-2">Phone</dt>
+        <dd class="col-sm-10">@Model.PhoneNumber</dd>
+
+        <dt class="col-sm-2">Date of Birth</dt>
+        <dd class="col-sm-10">@Model.DateOfBirth?.ToString("yyyy-MM-dd")</dd>
+    </dl>
+</div>
+
+<p>
+    <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn btn-secondary">Back to List</a>
+</p>

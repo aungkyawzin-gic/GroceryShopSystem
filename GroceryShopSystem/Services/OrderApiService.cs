@@ -8,7 +8,7 @@ namespace GroceryShopSystem.Services
     {
         private readonly HttpClient _httpClient;
 
-        const string API_BASE = "api/orders";
+        const string API_BASE = "api/orders/admin";
 
         public OrderApiService(HttpClient httpClient)
         {
@@ -19,25 +19,25 @@ namespace GroceryShopSystem.Services
         // ADMIN: Get all orders
         public async Task<List<AdminOrderViewModel>?> GetAllOrdersAsync()
         {
-            return await _httpClient.GetFromJsonAsync<List<AdminOrderViewModel>>("api/orders/admin");
+            return await _httpClient.GetFromJsonAsync<List<AdminOrderViewModel>>($"{API_BASE}");
         }
 
         // ADMIN: Get order by ID
         public async Task<AdminOrderViewModel?> GetOrderByIdAsync(int id)
         {
-            return await _httpClient.GetFromJsonAsync<AdminOrderViewModel>($"api/orders/admin/{id}");
+            return await _httpClient.GetFromJsonAsync<AdminOrderViewModel>($"{API_BASE}/{id}");
         }
 
         // ADMIN: Search orders by username
-        public async Task<List<AdminOrderViewModel>?> SearchOrdersByUsernameAsync(string username)
+        public async Task<List<AdminOrderViewModel>?> SearchOrdersByUsernameAsync(string? username)
         {
-            return await _httpClient.GetFromJsonAsync<List<AdminOrderViewModel>>($"api/orders/admin/search/{username}");
+            return await _httpClient.GetFromJsonAsync<List<AdminOrderViewModel>>($"{API_BASE}/search/{username}");
         }
 
         // ADMIN: Set order status to "delivered"
         public async Task<bool> SetOrderStatusToDeliveredAsync(int orderId)
         {
-            var response = await _httpClient.PutAsync($"api/orders/admin/{orderId}", null);
+            var response = await _httpClient.PutAsync($"{API_BASE}/{orderId}", null);
             return response.IsSuccessStatusCode;
         }
     }

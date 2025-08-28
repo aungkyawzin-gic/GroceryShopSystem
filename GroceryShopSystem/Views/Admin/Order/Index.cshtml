@@ -17,7 +17,7 @@
     {
         <div class="table-responsive shadow rounded-3">
             <table class="table align-middle table-hover">
-                <thead class="table-dark">
+                <thead class="table-">
                     <tr>
                         <th>#</th>
                         <th>Order No</th>
@@ -41,7 +41,7 @@
                             </td>
                             <td class="fw-bold">$@order.Order.GrandTotalPrice.ToString("0.00")</td>
                             <td>
-                                <a asp-area="Customer" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Order.Id" class="btn btn-sm btn-outline-primary">
+                                <a asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Order.Id" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-eye"></i> View
                                 </a>
                             </td>

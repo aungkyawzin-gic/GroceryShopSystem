@@ -14,7 +14,7 @@
             <div class="mb-4">
                 <h5>Order Information</h5>
                 <ul class="list-group">
-                    <li class="list-group-item"><strong>Order No:</strong> @Model.OrderNo</li>
+                    <li class="list-group-item"><strong>Order No:</strong> <p>@Model.OrderNo</p></li>
                     <li class="list-group-item"><strong>Order Date:</strong> @Model.CreatedAt.ToString("dd MMM yyyy")</li>
                     <li class="list-group-item"><strong>Status:</strong> @Model.Status</li>
                     <li class="list-group-item"><strong>Remark:</strong> @Model.Remark</li>
@@ -62,6 +62,6 @@
         </div>
     </div>
     <div class="mt-3">
-        <a asp-area="Customer" asp-controller="Orders" asp-action="Index" class="btn btn-secondary">Back to Orders</a>
+        <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="btn btn-secondary">Back to Orders</a>
     </div>
 </div>

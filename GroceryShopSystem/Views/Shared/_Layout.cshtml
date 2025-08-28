@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@{
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -10,26 +15,22 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light border-bottom box-shadow mb-3
+        <nav class="navbar navbar-expand-lg border-bottom box-shadow mb-3
             @(User.IsInRole("Admin") ? "navbar-dark bg-dark" : "navbar-light bg-light")">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    GroceryShopSystem
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">GroceryShopSystem</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        @if (User.Identity.IsAuthenticated)
+                        @if (isAuthenticated)
                         {
                             if (User.IsInRole("Admin"))
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Admin" ? "active" : "")"
-                                       asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
-                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link" asp-area="Admin" asp-controller="Products" asp-action="Index">Products</a>
                                 </li>
@@ -43,7 +44,7 @@
                                     <a class="nav-link" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
                                 </li>
                             }
-                            else if (User.IsInRole("Customer") || User.IsInRole("User"))
+                            else if (User.IsInRole("Customer"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
@@ -61,29 +62,13 @@
                         }
                         else
                         {
-                            // Menu for anonymous users
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
-                            </li>
                         }
                     </ul>
-                    <ul class="navbar-nav">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
-                            </li>
-                        }
-                    </ul>
+                    <!-- Auth buttons: Login/Register or Logout --> 
+                    @await Html.PartialAsync("_LoginPartial")
                 </div>
             </div>
         </nav>

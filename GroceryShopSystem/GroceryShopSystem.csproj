@@ -14,9 +14,7 @@
 		<None Remove="Data\Migrations\**" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Compile Include="..\..\..\..\Downloads\Program.cs" Link="Program.cs" />
-	</ItemGroup>
+	
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.19" />

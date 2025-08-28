@@ -47,6 +47,7 @@ namespace GroceryShopSystem.Services
 			return await _httpClient.GetFromJsonAsync<List<Order>>($"{API_BASE}/{userId}");
 		}
 
+
 		//CUSTOMER: GET: api/orders/{userId}/checkout - Proceed to checkout
 		public async Task<Order?> ProceedToCheckoutAsync(string userId)
 		{
@@ -62,6 +63,7 @@ namespace GroceryShopSystem.Services
 		public async Task<bool> PlaceOrderAsync(string userId, PlaceOrderViewModel request)
 		{
 			var response = await _httpClient.PostAsJsonAsync($"{API_BASE}/{userId}/place", request);
+
 			return response.IsSuccessStatusCode;
 		}
 

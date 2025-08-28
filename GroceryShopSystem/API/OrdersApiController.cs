@@ -1,4 +1,5 @@
 ﻿using GroceryShopSystem.Data;
+using GroceryShopSystem.Models;
 using GroceryShopSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -147,5 +148,154 @@ namespace GroceryShopSystem.API
 
             return Ok(new { message = $"Order {order.OrderNo} marked as delivered." });
         }
+
+        // GET: api/orders/{userId}
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders(string userId)
+        {
+            var orders = await _context.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            return Ok(orders);
+        }
+
+        // POST: api/orders/{userId}
+        [HttpPost("{userId}")]
+        public async Task<IActionResult> PlaceOrder(string userId, PlaceOrderViewModel placeOrderViewModel)
+        {
+            // Find user
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+                return NotFound("User not found.");
+
+            // Find user's cart
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
+            if (cart == null)
+                return NotFound("Your cart is not found.");
+
+            var cartItems = await _context.CartItems
+                .Include(ci => ci.Product)
+                .Where(ci => ci.CartId == cart.Id)
+                .ToListAsync();
+
+            if (cartItems.Count == 0)
+                return BadRequest("Your cart is empty.");
+
+            // Handle Address
+            if (user.AddressId.HasValue)
+            {
+                // Update existing address
+                var existingAddress = await _context.Addresses.FindAsync(user.AddressId.Value);
+                if (existingAddress != null)
+                {
+                    existingAddress.Street = placeOrderViewModel.Street;
+                    existingAddress.City = placeOrderViewModel.City;
+                    existingAddress.State = placeOrderViewModel.State;
+                    _context.Addresses.Update(existingAddress);
+                }
+            }
+            else
+            {
+                // Add new address
+                var newAddress = new Address
+                {
+                    Street = placeOrderViewModel.Street,
+                    City = placeOrderViewModel.City,
+                    State = placeOrderViewModel.State
+                };
+                _context.Addresses.Add(newAddress);
+                await _context.SaveChangesAsync();
+
+                // Link user with new address
+                user.AddressId = newAddress.Id;
+                _context.Users.Update(user);
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Calculate totals
+            decimal shipping = 5.00m; // example
+            decimal tax = placeOrderViewModel.TotalPrice * 0.1m;
+            decimal grandTotal = placeOrderViewModel.TotalPrice + shipping + tax;
+
+            // Create order
+            var order = new Order
+            {
+                OrderNo = "ORD-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper(),
+                UserId = userId,
+                Status = "created",
+                TotalPrice = placeOrderViewModel.TotalPrice,
+                ShippingPrice = shipping,
+                Tax = tax,
+                GrandTotalPrice = grandTotal,
+                Remark = placeOrderViewModel.Remark ?? string.Empty,
+            };
+
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            // Add order items
+            foreach (var item in cartItems)
+            {
+                var orderItem = new OrderItem
+                {
+                    OrderId = order.Id,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    PriceAtPurchase = item.Product.Price,
+                };
+                _context.OrderItems.Add(orderItem);
+            }
+
+            // Clear cart
+            _context.CartItems.RemoveRange(cartItems);
+            _context.Carts.Remove(cart);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                order.Id,
+                order.OrderNo,
+                order.GrandTotalPrice,
+                order.Status,
+                Message = "Order placed successfully."
+            });
+        }
+
+        // GET: api/orders/{userId}/details/{orderId}
+        [HttpGet("{userId}/details/{orderId}")]
+        public async Task<IActionResult> GetOrderDetails(string userId, int orderId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);
+            if (order == null)
+            {
+                return NotFound(new { message = $"Order with ID {orderId} not found for this user." });
+            }
+            return Ok(order);
+        }
+
+        //DELETE: api/orders/{userId}/{orderId}
+        [HttpDelete("{userId}/{orderId}")]
+        public async Task<IActionResult> DeleteOrder(string userId, int orderId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+				.FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);
+            if (order == null)
+            {
+                return NotFound(new { message = $"Order with ID {orderId} not found for this user." });
+            }
+            _context.OrderItems.RemoveRange(order.OrderItems);
+			_context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+			return Ok(new { message = $"Order {order.OrderNo} and its items have been deleted." });
+		}
     }
 }

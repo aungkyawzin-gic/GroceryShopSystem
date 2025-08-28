@@ -3,6 +3,7 @@ using GroceryShopSystem.Models;
 using GroceryShopSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace GroceryShopSystem.API
 {
@@ -11,14 +12,16 @@ namespace GroceryShopSystem.API
     public class OrdersApiController : Controller
     {
         private readonly ApplicationDbContext _context;
+		private readonly OrderSettings _orderSettings;
 
-        public OrdersApiController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+		public OrdersApiController(ApplicationDbContext context, IOptions<OrderSettings> orderSettings)
+		{
+			_context = context;
+			_orderSettings = orderSettings.Value;
+		}
 
-        // GET: api/orders/admin
-        [HttpGet("admin")]
+		// GET: api/orders/admin
+		[HttpGet("admin")]
         public async Task<ActionResult<IEnumerable<AdminOrderViewModel>>> GetOrders()
         {
             var orders = await _context.Orders
@@ -163,111 +166,152 @@ namespace GroceryShopSystem.API
             return Ok(orders);
         }
 
-        // POST: api/orders/{userId}
-        [HttpPost("{userId}")]
-        public async Task<IActionResult> PlaceOrder(string userId, PlaceOrderViewModel placeOrderViewModel)
-        {
-            // Find user
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null)
-                return NotFound("User not found.");
+		// POST: api/orders/{userId}/checkout
+		[HttpPost("{userId}/checkout")]
+		public async Task<IActionResult> ProceedToCheckout(string userId)
+		{
+			// Find user
+			var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+			if (user == null)
+				return NotFound("User not found.");
 
-            // Find user's cart
-            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
-            if (cart == null)
-                return NotFound("Your cart is not found.");
+			// Find user's cart
+			var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
+			if (cart == null)
+				return NotFound("Your cart is not found.");
 
-            var cartItems = await _context.CartItems
-                .Include(ci => ci.Product)
-                .Where(ci => ci.CartId == cart.Id)
-                .ToListAsync();
+			var cartItems = await _context.CartItems
+				.Include(ci => ci.Product)
+				.Where(ci => ci.CartId == cart.Id)
+				.ToListAsync();
 
-            if (cartItems.Count == 0)
-                return BadRequest("Your cart is empty.");
+			if (cartItems.Count == 0)
+				return BadRequest("Your cart is empty.");
 
-            // Handle Address
-            if (user.AddressId.HasValue)
-            {
-                // Update existing address
-                var existingAddress = await _context.Addresses.FindAsync(user.AddressId.Value);
-                if (existingAddress != null)
-                {
-                    existingAddress.Street = placeOrderViewModel.Street;
-                    existingAddress.City = placeOrderViewModel.City;
-                    existingAddress.State = placeOrderViewModel.State;
-                    _context.Addresses.Update(existingAddress);
-                }
-            }
-            else
-            {
-                // Add new address
-                var newAddress = new Address
-                {
-                    Street = placeOrderViewModel.Street,
-                    City = placeOrderViewModel.City,
-                    State = placeOrderViewModel.State
-                };
-                _context.Addresses.Add(newAddress);
-                await _context.SaveChangesAsync();
+			// Create an order (status = pending)
+			var order = new Order
+			{
+				OrderNo = "ORD-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper(),
+				UserId = userId,
+				Status = "pending",
+				TotalPrice = 0,
+				ShippingPrice = 0,
+				Tax = 0,
+				GrandTotalPrice = 0
+			};
 
-                // Link user with new address
-                user.AddressId = newAddress.Id;
-                _context.Users.Update(user);
-            }
+			_context.Orders.Add(order);
+			await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
+			// Move cart items to order items
+			foreach (var item in cartItems)
+			{
+				var orderItem = new OrderItem
+				{
+					OrderId = order.Id,
+					ProductId = item.ProductId,
+					Quantity = item.Quantity,
+					PriceAtPurchase = item.Product.Price,
+				};
+				_context.OrderItems.Add(orderItem);
+			}
 
-            // Calculate totals
-            decimal shipping = 5.00m; // example
-            decimal tax = placeOrderViewModel.TotalPrice * 0.1m;
-            decimal grandTotal = placeOrderViewModel.TotalPrice + shipping + tax;
+			// Clear cart
+			_context.CartItems.RemoveRange(cartItems);
+			_context.Carts.Remove(cart);
 
-            // Create order
-            var order = new Order
-            {
-                OrderNo = "ORD-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper(),
-                UserId = userId,
-                Status = "created",
-                TotalPrice = placeOrderViewModel.TotalPrice,
-                ShippingPrice = shipping,
-                Tax = tax,
-                GrandTotalPrice = grandTotal,
-                Remark = placeOrderViewModel.Remark ?? string.Empty,
-            };
+			await _context.SaveChangesAsync();
 
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+			return Ok(new
+			{
+				order.Id,
+				order.OrderNo,
+				order.Status,
+				Message = "Successfully proceed checkout."
+			});
+		}
 
-            // Add order items
-            foreach (var item in cartItems)
-            {
-                var orderItem = new OrderItem
-                {
-                    OrderId = order.Id,
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity,
-                    PriceAtPurchase = item.Product.Price,
-                };
-                _context.OrderItems.Add(orderItem);
-            }
+		// POST: api/orders/{userId}/place
+		[HttpPost("{userId}/place")]
+		public async Task<IActionResult> PlaceOrder(string userId, PlaceOrderViewModel placeOrderViewModel)
+		{
+			// Find user
+			var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+			if (user == null)
+				return NotFound("User not found.");
 
-            // Clear cart
-            _context.CartItems.RemoveRange(cartItems);
-            _context.Carts.Remove(cart);
-            await _context.SaveChangesAsync();
+			// Find the most recent pending order for this user
+			var order = await _context.Orders
+				.Where(o => o.UserId == userId && o.Status == "pending")
+				.OrderByDescending(o => o.CreatedAt)
+				.FirstOrDefaultAsync();
 
-            return Ok(new
-            {
-                order.Id,
-                order.OrderNo,
-                order.GrandTotalPrice,
-                order.Status,
-                Message = "Order placed successfully."
-            });
-        }
+			if (order == null)
+				return NotFound("No pending order found. Please proceed to checkout first.");
 
-        // GET: api/orders/{userId}/details/{orderId}
-        [HttpGet("{userId}/details/{orderId}")]
+			// Handle address
+			if (user.AddressId.HasValue)
+			{
+				var existingAddress = await _context.Addresses.FindAsync(user.AddressId.Value);
+				if (existingAddress != null)
+				{
+					existingAddress.Street = placeOrderViewModel.Street;
+					existingAddress.City = placeOrderViewModel.City;
+					existingAddress.State = placeOrderViewModel.State;
+					_context.Addresses.Update(existingAddress);
+				}
+			}
+			else
+			{
+				var newAddress = new Address
+				{
+					Street = placeOrderViewModel.Street,
+					City = placeOrderViewModel.City,
+					State = placeOrderViewModel.State
+				};
+				_context.Addresses.Add(newAddress);
+				await _context.SaveChangesAsync();
+
+				user.AddressId = newAddress.Id;
+				_context.Users.Update(user);
+			}
+
+			await _context.SaveChangesAsync();
+
+			// Calculate totals using order items
+			var orderItems = await _context.OrderItems
+				.Include(oi => oi.Product)
+				.Where(oi => oi.OrderId == order.Id)
+				.ToListAsync();
+
+			decimal shipping = _orderSettings.ShippingFee;
+			decimal tax = placeOrderViewModel.TotalPrice * _orderSettings.TaxRate;
+			decimal grandTotal = placeOrderViewModel.TotalPrice + shipping + tax;
+
+			// Update order
+			order.TotalPrice = placeOrderViewModel.TotalPrice;
+			order.ShippingPrice = shipping;
+			order.Tax = tax;
+			order.GrandTotalPrice = grandTotal;
+			order.Remark = placeOrderViewModel.Remark ?? string.Empty;
+			order.Status = "created";
+
+			_context.Orders.Update(order);
+			await _context.SaveChangesAsync();
+
+			return Ok(new
+			{
+				order.Id,
+				order.OrderNo,
+				order.GrandTotalPrice,
+				order.Status,
+				Message = "Order placed successfully."
+			});
+		}
+
+		// GET: api/orders/{userId}/details/{orderId}
+		[HttpGet("{userId}/details/{orderId}")]
+
         public async Task<IActionResult> GetOrderDetails(string userId, int orderId)
         {
             var order = await _context.Orders

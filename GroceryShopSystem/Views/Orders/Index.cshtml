@@ -1,5 +1,4 @@
-﻿@using GroceryShopSystem.ViewModels
-@model IEnumerable<AdminOrderViewModel>
+﻿@model IEnumerable<GroceryShopSystem.Models.Order>
 
 @{
     ViewData["Title"] = "My Orders";
@@ -16,19 +15,9 @@
     }
     else
     {
-        <div class="mb-3">
-            <form method="get" asp-action="Index" class="d-flex">
-                <input type="text" name="search" value="@Context.Request.Query["search"]"
-                       class="form-control me-2" placeholder="Search by Username" />
-                <button type="submit" class="btn btn-outline-primary">
-                    <i class="bi bi-search"></i> Search
-                </button>
-            </form>
-        </div>
-
         <div class="table-responsive shadow rounded-3">
             <table class="table align-middle table-hover">
-                <thead class="table-">
+                <thead class="table-dark">
                     <tr>
                         <th>#</th>
                         <th>Order No</th>
@@ -50,9 +39,9 @@
                                     @order.Order.Status
                                 </span>
                             </td>
-                            <td class="fw-bold">$@order.Order.GrandTotal.ToString("0.00")</td>
+                            <td class="fw-bold">$@order.Order.GrandTotalPrice.ToString("0.00")</td>
                             <td>
-                                <a asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Order.OrderId" class="btn btn-sm btn-outline-primary">
+                                <a asp-area="Customer" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Order.Id" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-eye"></i> View
                                 </a>
                             </td>

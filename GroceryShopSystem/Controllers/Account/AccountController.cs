@@ -1,6 +1,7 @@
 
 using AuthorizeTesting.Data;
 using GroceryShopSystem.Models;
+using GroceryShopSystem.Services;
 using GroceryShopSystem.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,109 +10,54 @@ using System;
 
 namespace GroceryShopSystem.Controllers.Account
 {
-	[Route("Account/[action]")]
+	[Route("Account")]
 	public class AccountController : Controller
 	{
-
-		private readonly UserManager<ApplicationUser> _userManager;
-		private readonly SignInManager<ApplicationUser> _signInManager;
-
-		public AccountController(UserManager<ApplicationUser> userManager,
-			SignInManager<ApplicationUser> signInManager)
+		private readonly AccountApiServices _accountApiServices;
+		private readonly ILogger<AccountController> _logger;
+		const string AccountBase = "~/Views/Account/";
+		public AccountController(AccountApiServices accountApiServices, ILogger<AccountController> logger)
 		{
-			_userManager = userManager;
-			_signInManager = signInManager;
+			_accountApiServices = accountApiServices;
+			_logger = logger;
 		}
 
-		[HttpGet]
-		public IActionResult Login() => View();
-
-		[HttpPost]
-		public async Task<IActionResult> Login(LoginViewModel loginViewModel)
+		//Get: Account/Register - shows the registration form
+		[HttpGet("Register")]
+		public IActionResult Register()
 		{
-			if (!ModelState.IsValid) return View(loginViewModel);
-
-			var user = await _userManager.FindByEmailAsync(loginViewModel.Email);
-
-			if (user != null)
-			{
-				//User is found, check password
-				var passwordCheck = await _userManager.CheckPasswordAsync(user, loginViewModel.Password);
-				if (passwordCheck)
-				{
-					//Password correct, sign in
-					var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, loginViewModel.RememberMe, lockoutOnFailure: false);
-					if (result.Succeeded)
-					{
-						//Check Role and Redirect
-						if(await _userManager.IsInRoleAsync(user, UserRoles.Admin))
-							return Ok(user);
-						//return RedirectToAction("Index", "Admin"); //goes to Admin/Index
-						else if(await _userManager.IsInRoleAsync(user, UserRoles.User))
-							return Ok(user);
-						//return RedirectToAction("Index", "Home"); //goes to Home/Index
-
-						//Fallback in case of no roles
-						return RedirectToAction("Index", "Home");
-					}
-				}
-				//Password is incorrect
-				TempData["Error"] = "Wrong credentials. Please try again";
-				return View(loginViewModel);
-			}
-
-			//User not found
-			TempData["Error"] = "Wrong credentials. Please try again";
-			return View(loginViewModel);
+			return View($"{AccountBase}Register.cshtml");
 		}
 
-		[HttpGet]
-		public IActionResult Register()=> View();
-
-		[HttpPost]
+		// POST: Account/Register - handles the form submission
+		[HttpPost("Register")]
 		public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
 		{
-			if (!ModelState.IsValid) return View(registerViewModel);
-
-			var user = await _userManager.FindByEmailAsync(registerViewModel.Email);
-			if (user != null)
+			if (!ModelState.IsValid)
 			{
-				TempData["Error"] = "This email address is already in use";
+				return View($"{AccountBase}Register.cshtml", registerViewModel);
+			}
+			try
+			{
+				var newUser = await _accountApiServices.RegisterUserAsync(registerViewModel);
+				if (newUser != null)
+				{
+					// Successfully registered and logged in
+					return RedirectToAction("Index", "Home"); //goes to Home/Index
+				}
+				else
+				{
+					// failed case
+					ModelState.AddModelError("", "Registration failed. Try again.");
+					return View($"{AccountBase}Register.cshtml", registerViewModel);
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error during user registration");
+				ModelState.AddModelError("", "An error occurred while processing your request.");
 				return View(registerViewModel);
 			}
-
-			var newUser = new ApplicationUser()
-			{
-				Email = registerViewModel.Email,
-				UserName = registerViewModel.Email,
-			};
-			var newUserResponse = await _userManager.CreateAsync(newUser, registerViewModel.Password);
-
-			if (newUserResponse.Succeeded)
-			{
-				await _userManager.AddToRoleAsync(newUser, UserRoles.User);
-
-				//  Automatically log them in
-				await _signInManager.SignInAsync(newUser, isPersistent: false);
-				return Ok(newUser);
-
-				//return RedirectToAction("Index", "Home"); //goes to Home/Index
-			}
-
-			// Show errors if creation failed
-			foreach (var error in newUserResponse.Errors)
-			{
-				ModelState.AddModelError("", error.Description);
-			}
-
-			return View(registerViewModel);
-		}
-
-		[HttpPost]
-		public async Task<IActionResult> Logout()
-		{
-			await _signInManager.SignOutAsync();
-			return RedirectToAction("Index", "Home");
 		}
 	}
 }

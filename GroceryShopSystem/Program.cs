@@ -51,6 +51,8 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddHttpClient<ProductsApiServices>();
 builder.Services.AddHttpClient<CartApiServices>();
 builder.Services.AddHttpClient<CategoriesApiServices>();
+builder.Services.AddHttpClient<AccountApiServices>();
+builder.Services.AddHttpClient<AuthApiServices>();
 
 var app = builder.Build();
 

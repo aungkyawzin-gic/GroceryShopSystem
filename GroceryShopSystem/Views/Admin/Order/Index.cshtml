@@ -55,6 +55,20 @@
                                 <a asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Order.OrderId" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-eye"></i> View
                                 </a>
+
+                                @if (order.Order.Status == "create")
+                                {                                    
+                                    <a asp-area="Admin" asp-controller="Orders" asp-action="ApproveOrder" asp-route-id="@order.Order.OrderId" class="btn btn-sm btn-outline btn-success">
+                                        <i class="bi bi-eye"></i> deliver
+                                    </a>
+                                }
+                                else
+                                {                                    
+                                    <a asp-area="Admin" asp-controller="Orders" aria-disabled="true" asp-action="ApproveOrder" asp-route-id="@order.Order.OrderId" class="btn btn-sm btn-outline btn-secondary">
+                                        <i class="bi bi-eye"></i> delivered
+                                    </a>
+                                }
+                                
                             </td>
                         </tr>
                     }
@@ -70,9 +84,7 @@
         return status.ToLower() switch
         {
             "create" => "bg-warning text-dark",
-            "delivered" => "bg-success",
-            "pending" => "bg-secondary",
-            _ => "bg-info"
+            "delivered" => "bg-success"            
         };
     }
 }

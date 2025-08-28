@@ -1,4 +1,5 @@
-﻿@model GroceryShopSystem.Models.Order
+﻿@using GroceryShopSystem.ViewModels
+@model AdminOrderViewModel
 @{
     ViewData["Title"] = "Order Details";
     var counter = 1;
@@ -34,11 +35,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.OrderItems)
+                        @foreach (var item in Model.Items)
                         {
                             <tr>
                                 <td>@counter</td>
-                                <td>@item.Product.Title</td>
+                                <td>@item.ProductName</td>
                                 <td>@item.Quantity</td>
                                 <td>$@item.PriceAtPurchase</td>
                                 <td>$@(item.Quantity* item.PriceAtPurchase)</td>
@@ -56,7 +57,7 @@
                     <p class="mb-1 d-flex justify-content-between"><span>Shipping:</span><span>$@Model.ShippingPrice</span></p>
                     <p class="mb-1 d-flex justify-content-between"><span>Tax:</span><span>$@Model.Tax</span></p>
                     <hr>
-                    <p class="fw-bold d-flex justify-content-between"><span>Total:</span><span>$@Model.GrandTotalPrice</span></p>
+                    <p class="fw-bold d-flex justify-content-between"><span>Total:</span><span>$@Model.GrandTotal</span></p>
                 </div>
             </div>
         </div>

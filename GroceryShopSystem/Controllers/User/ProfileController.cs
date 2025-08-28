@@ -14,7 +14,8 @@ public class ProfileController : Controller
         _userService = userService;
     }
 
-    [HttpGet]
+    // GET: /User/profile
+    [HttpGet("")]
     public async Task<IActionResult> Index()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -33,7 +34,8 @@ public class ProfileController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    // POST: /User/profile
+    [HttpPost("")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(UserUpdateViewModel model)
     {
@@ -55,7 +57,8 @@ public class ProfileController : Controller
         if (result)
         {
             TempData["Message"] = "Profile updated successfully!";
-            return RedirectToAction("Profile");
+            // Redirect to the same GET action
+            return RedirectToAction(nameof(Index));
         }
 
         ModelState.AddModelError(string.Empty, "Failed to update profile. Please try again.");

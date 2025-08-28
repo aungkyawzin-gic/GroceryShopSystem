@@ -2,62 +2,100 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - GroceryShopSystem</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/account.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/account.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-light border-bottom box-shadow mb-3
+            @(User.IsInRole("Admin") ? "navbar-dark bg-dark" : "navbar-light bg-light")">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">GroceryShopSystem</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    GroceryShopSystem
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-
-                        @* Admin menu *@
-                        @if (User.IsInRole("Admin"))
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Admin" asp-action="Products">Products</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Admin" asp-action="Orders">Orders</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Users" asp-action="Index">Users</a></li>
+                            if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Admin" ? "active" : "")"
+                                       asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="Admin" asp-controller="Products" asp-action="Index">Products</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="Admin" asp-controller="Categories" asp-action="Index">Categories</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="Admin" asp-controller="Orders" asp-action="Index">Orders</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
+                                </li>
+                            }
+                            else if (User.IsInRole("Customer") || User.IsInRole("User"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Cart" asp-action="Index">My Cart</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Orders" asp-action="MyOrders">My Orders</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
+                                </li>
+                            }
                         }
-
-                        @* Regular user menu *@
-                        else if (User.IsInRole("Customer"))
+                        else
                         {
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Shop" asp-action="Index">Shop</a></li>
-                            <li class="nav-item"><a asp-action="Index" asp-area="Customer" asp-controller="Cart" class="nav-link text-dark">My Cart</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Orders" asp-action="MyOrders">My Orders</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Profile" asp-action="Index">Profile</a></li>
+                            // Menu for anonymous users
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
+                            </li>
                         }
                     </ul>
-
-                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>
     </header>
 
-    <div class="container">
+    <div class="container mt-4">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted mt-auto">
         <div class="container">
             &copy; 2025 - GroceryShopSystem
         </div>

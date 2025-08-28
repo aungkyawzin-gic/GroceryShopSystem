@@ -32,17 +32,17 @@ namespace GroceryShopSystem.Services
 			return null;
 		}
 
-		// PATCH: api/Carts/{userId}/product/{productId} - Update cart item quantity
-		public async Task<bool> UpdateCartItemQuantityAsync(string userId, int productId, int quantity)
+		// PATCH: api/carts/{userId}/{cartItemId} - Update cart item quantity
+		public async Task<bool> UpdateCartItemQuantityAsync(string userId, int cartItemId, int quantity)
 		{
-			var response = await _httpClient.PatchAsJsonAsync($"{API_BASE}/{userId}/{productId}", quantity);
+			var response = await _httpClient.PatchAsJsonAsync($"{API_BASE}/{userId}/{cartItemId}", quantity);
 			return response.IsSuccessStatusCode;
 		}
 
-		// DELETE: api/Carts/{userId}/product/{productId} - Delete single cart item
-		public async Task<bool> DeleteCartItemAsync(string userId, int productId)
+		// DELETE: api/carts/{userId}/{cartItemId} - Delete single cart item
+		public async Task<bool> DeleteCartItemAsync(string userId, int cartItemId)
 		{
-			var response = await _httpClient.DeleteAsync($"{API_BASE}/{userId}/{productId}");
+			var response = await _httpClient.DeleteAsync($"{API_BASE}/{userId}/{cartItemId}");
 			return response.IsSuccessStatusCode;
 		}
 

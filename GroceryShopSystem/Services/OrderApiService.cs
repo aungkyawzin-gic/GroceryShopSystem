@@ -8,7 +8,7 @@ namespace GroceryShopSystem.Services
     {
         private readonly HttpClient _httpClient;
 
-        const string API_BASE = "api/orders";
+        const string API_BASE = "api/orders/admin";
 
         public OrderApiService(HttpClient httpClient)
         {
@@ -19,6 +19,7 @@ namespace GroceryShopSystem.Services
         // ADMIN: Get all orders
         public async Task<List<AdminOrderViewModel>?> GetAllOrdersAsync()
         {
+
             return await _httpClient.GetFromJsonAsync<List<AdminOrderViewModel>>($"{API_BASE }/admin");
         }
 
@@ -29,15 +30,17 @@ namespace GroceryShopSystem.Services
         }
 
         // ADMIN: Search orders by username
-        public async Task<List<AdminOrderViewModel>?> SearchOrdersByUsernameAsync(string username)
+        public async Task<List<AdminOrderViewModel>?> SearchOrdersByUsernameAsync(string? username)
         {
             return await _httpClient.GetFromJsonAsync<List<AdminOrderViewModel>>($"{API_BASE}/admin/search/{username}");
+
         }
 
         // ADMIN: Set order status to "delivered"
         public async Task<bool> SetOrderStatusToDeliveredAsync(int orderId)
         {
             var response = await _httpClient.PutAsync($"{API_BASE}/admin/{orderId}", null);
+
             return response.IsSuccessStatusCode;
         }
 

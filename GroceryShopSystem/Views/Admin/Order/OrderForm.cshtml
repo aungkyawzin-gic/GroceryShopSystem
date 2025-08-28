@@ -1,0 +1,75 @@
+﻿@model IEnumerable<GroceryShopSystem.Models.CartItem>
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container my-5">
+    <h2 class="mb-4 text-center fw-bold">Confirm Your Order</h2>
+
+    <div class="row">
+        <!-- Cart Items -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm rounded-3 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Cart Items</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Product.Title</td>
+                                    <td>@item.Quantity</td>
+                                    <td>$@item.Product.Price</td>
+                                    <td>$@(item.Product.Price* item.Quantity)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-end mt-3">
+                        <h5>Total: $@Model.Sum(i => i.Product.Price * i.Quantity)</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping Address Input -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Shipping Address</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ConfirmOrder" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Street</label>
+                            <input type="text" name="Street" class="form-control" required placeholder="Enter street">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">City</label>
+                            <input type="text" name="City" class="form-control" required placeholder="Enter city">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">State</label>
+                            <input type="text" name="State" class="form-control" required placeholder="Enter state">
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-check-circle"></i> Confirm Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

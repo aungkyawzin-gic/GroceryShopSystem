@@ -1,11 +1,13 @@
 ﻿using GroceryShopSystem.Data;
 using GroceryShopSystem.Models;
+using GroceryShopSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 
 namespace GroceryShopSystem.API
 {
-	[Route("api/[controller]")]
+	[Route("api/carts")]
 	[ApiController]
 	public class CartsApiController : Controller
 	{
@@ -16,7 +18,7 @@ namespace GroceryShopSystem.API
 			_context = context;
 		}
 
-		// GET: api/Carts/{userId}
+		// GET: api/carts/{userId}
 		[HttpGet("{userId}")]
 		public async Task<ActionResult<IEnumerable<CartItem>>> GetCart(string userId)
 		{
@@ -34,9 +36,9 @@ namespace GroceryShopSystem.API
 			return Ok(cartItems);
 		}
 
-		// POST: api/Carts/{userId}
+		// POST: api/carts/{userId}
 		[HttpPost("{userId}")]
-		public async Task<ActionResult<CartItem>> CreateCartItem(string userId, CartItem cartItemRequest)
+		public async Task<ActionResult<CartItem>> CreateCartItem(string userId, CartItemViewModel cartItemRequest)
 		{
 			// Find the user's cart
 			var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
@@ -97,61 +99,48 @@ namespace GroceryShopSystem.API
 			return Ok(new { message = "Item added to cart successfully." });
 		}
 
-		// PATCH: api/Carts/{userId}/product/{productId}
-		[HttpPatch("user/{userId}/product/{productId}")]
-		public async Task<IActionResult> UpdateCartItemQuantity(string userId, int productId, [FromBody] int quantity)
+		// PATCH: api/carts/{userId}/{cartItemId}
+		[HttpPatch("{userId}/{cartItemId}")]
+		public async Task<IActionResult> UpdateCartItemQuantity(string userId, int cartItemId, [FromBody] int quantity)
 		{
-			// Find the cart item for the user and product
+			if (quantity <= 0)
+				return BadRequest(new { message = "Quantity must be greater than zero." });
+			// Find the cart item for the user
 			var cartItem = await _context.CartItems
+										 .Include(ci => ci.Product)
 										 .Include(ci => ci.Cart)
-										 .FirstOrDefaultAsync(ci => ci.Cart.UserId == userId && ci.ProductId == productId);
-
+										 .FirstOrDefaultAsync(ci => ci.Id == cartItemId && ci.Cart.UserId == userId);
 			if (cartItem == null)
 				return NotFound(new { message = "Cart item not found." });
-
-			// Check if the product exists and get stock
-			var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
-			if (product == null)
-				return NotFound(new { message = "Product not found." });
-
-			// Calculate how much stock change is needed
-			int quantityChange = quantity - cartItem.Quantity;
-
 			// Check if requested quantity exceeds available stock
-			if (quantityChange > product.Quantity)
-				return BadRequest(new { message = $"Cannot set quantity to {quantity}. Only {product.Quantity + cartItem.Quantity} left in stock." });
-
-			// Update the cart item quantity
+			if (quantity > cartItem.Product.Quantity)
+				return BadRequest(new { message = $"Cannot set quantity to {quantity}. Only {cartItem.Product.Quantity} left in stock." });
+			// Update the quantity
 			cartItem.Quantity = quantity;
 			cartItem.UpdatedAt = DateTime.UtcNow;
 			_context.CartItems.Update(cartItem);
-
 			await _context.SaveChangesAsync();
-
-			return Ok(cartItem);
+			return Ok(new { message = "Cart item quantity updated successfully." });
 		}
 
-		// DELETE: api/Carts/{userId}/product/{productId}
-		[HttpDelete("user/{userId}/product/{productId}")]
-		public async Task<IActionResult> DeleteCartItem(string userId, int productId)
+		// DELETE: api/carts/{userId}/{cartItemId}
+		[HttpDelete("{userId}/{cartItemId}")]
+		public async Task<IActionResult> DeleteCartItem(string userId, int cartItemId)
 		{
-			// Find the cart item for the user and product
+			// Find the cart item for the user
 			var cartItem = await _context.CartItems
 										 .Include(ci => ci.Cart)
-										 .FirstOrDefaultAsync(ci => ci.Cart.UserId == userId && ci.ProductId == productId);
-
+										 .FirstOrDefaultAsync(ci => ci.Id == cartItemId && ci.Cart.UserId == userId);
 			if (cartItem == null)
 				return NotFound(new { message = "Cart item not found." });
-
 			// Remove the cart item
 			_context.CartItems.Remove(cartItem);
 			await _context.SaveChangesAsync();
-
-			return Ok(new { message = "Cart item removed successfully." });
+			return Ok(new { message = "Cart item deleted successfully." });
 		}
 
-		//DELETE: api/Carts/{userId}/clear
-		[HttpDelete("user/{userId}/clear")]
+		//DELETE: api/carts/{userId}/clear
+		[HttpDelete("{userId}/clear")]
 		public async Task<IActionResult> ClearCart(string userId)
 		{
 			// Find all cart items for the user
@@ -168,8 +157,8 @@ namespace GroceryShopSystem.API
 			return Ok(new { message = "Cart cleared successfully." });
 		}
 
-		// DELETE: api/Carts/{userId}/{cardtId}
-		[HttpDelete("user/{userId}/cart")]
+		// DELETE: api/carts/{userId}/{cardtId}
+		[HttpDelete("{userId}/cart")]
 		public async Task<IActionResult> DeleteCart(string userId)
 		{
 			// Find the user's cart

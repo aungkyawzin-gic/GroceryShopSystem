@@ -8,7 +8,7 @@ namespace GroceryShopSystem.Services
     {
         private readonly HttpClient _httpClient;
 
-        const string API_BASE = "api/orders/admin";
+        const string API_BASE = "api/orders";
 
         public OrderApiService(HttpClient httpClient)
         {

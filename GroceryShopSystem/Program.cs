@@ -50,6 +50,7 @@ builder.Services.AddSwaggerGen(c =>
 // services info
 builder.Services.AddHttpClient<ProductsApiServices>();
 builder.Services.AddHttpClient<CategoriesApiServices>();
+builder.Services.AddHttpClient<UserApiServices>();
 
 var app = builder.Build();
 

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<GroceryShopSystem.Models.Order>
+﻿@model IEnumerable<AdminOrderViewModel>
 
 @{
     ViewData["Title"] = "My Orders";
@@ -15,6 +15,16 @@
     }
     else
     {
+        <div class="mb-3">
+            <form method="get" asp-action="Index" class="d-flex">
+                <input type="text" name="search" value="@Context.Request.Query["search"]"
+                       class="form-control me-2" placeholder="Search by Username" />
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </form>
+        </div>
+
         <div class="table-responsive shadow rounded-3">
             <table class="table align-middle table-hover">
                 <thead class="table-">

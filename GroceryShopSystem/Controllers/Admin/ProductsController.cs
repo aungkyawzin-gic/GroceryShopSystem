@@ -31,9 +31,30 @@ namespace GroceryShopSystem.Controllers.Admin
 
         [HttpGet("")]
         // GET: ProductsView
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? categoryId, string? sortOrder)
         {
             var products = await _productServices.GetProductsAsync();
+
+            if (categoryId.HasValue)
+            {
+                products = products.Where(p => p.CategoryId == categoryId.Value);
+            }
+            
+            // sort by price
+            products = sortOrder switch
+            {
+                "price_desc" => products.OrderByDescending(p => p.Price),
+                "price_asc" => products.OrderBy(p => p.Price),
+                _ => products.OrderBy(p => p.Title) // default sort
+            };
+
+            // categories for dropdown
+            var categories = await _categoryServices.GetCategoriesAsync();
+            ViewBag.Categories = new SelectList(categories, "Id", "Title", categoryId);
+            ViewBag.CurrentCategory = categoryId;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NextSort = sortOrder == "price_asc" ? "price_desc" : "price_asc";
+            ViewBag.CurrentSort = sortOrder;
             return View($"{AdminBase}Index.cshtml", products);
         }
 

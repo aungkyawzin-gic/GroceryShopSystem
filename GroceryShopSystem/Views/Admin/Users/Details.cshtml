@@ -21,7 +21,8 @@
 </div>
 
 <p>
-    <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn btn-secondary">Back to List</a>
-    <a asp-area="Admin" asp-controller="Orders" asp-route-id="@Model.Id" asp-action="Index" class="btn btn-secondary">Back to List</a>
-
+    <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn btn-sm btn-secondary">Back to List</a>
+    <a asp-area="Admin" asp-controller="Orders" asp-action="IndexByUserId" asp-route-userid="@Model.Id" class="btn btn-warning btn-sm me-1">
+        <i class="bi bi-eye"></i> Orders
+    </a>
 </p>

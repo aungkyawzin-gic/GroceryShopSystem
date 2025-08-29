@@ -73,8 +73,8 @@ namespace GroceryShopSystem.Controllers.Account
 		{
 			try
 			{
-				await authApiServices.LogoutUserAsync();
-				return RedirectToAction("Index", "Home");
+                await signInManager.SignOutAsync();
+                return RedirectToAction("Index", "Home");
 			}
 			catch (Exception ex)
 			{

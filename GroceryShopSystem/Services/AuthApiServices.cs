@@ -25,12 +25,5 @@ namespace GroceryShopSystem.Services
 			}
 			return null;
 		}
-
-		// POST: api/auth/logout
-		public async Task<bool> LogoutUserAsync()
-		{
-			var response = await _httpClient.PostAsync($"{API_BASE}/logout", null);
-			return response.IsSuccessStatusCode;
-		}
 	}
 }

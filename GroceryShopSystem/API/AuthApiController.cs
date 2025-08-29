@@ -49,13 +49,5 @@ namespace GroceryShopSystem.API
 
 			return Unauthorized(new { message = "Invalid email or password." });
 		}
-
-		// POST: api/auth/logout
-		[HttpPost("logout")]
-		public async Task<IActionResult> Logout()
-		{
-			await _signInManager.SignOutAsync();
-			return Ok(new { message = "Logged out successfully." });
-		}
 	}
 }

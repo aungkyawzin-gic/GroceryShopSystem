@@ -49,35 +49,35 @@ namespace GroceryShopSystem.Controllers.Customer
             return View("~/Views/Orders/Details.cshtml", order);
         }
 
-        // GET: Customer/Orders/PlaceOrder
-        [HttpGet("PlaceOrder")]
-        public IActionResult PlaceOrder()
-        {
-            return View("~/Views/Orders/PlaceOrder.cshtml");
-        }
+        //// GET: Customer/Orders/PlaceOrder
+        //[HttpGet("PlaceOrder")]
+        //public IActionResult PlaceOrder()
+        //{
+        //    return View("~/Views/Orders/PlaceOrder.cshtml");
+        //}
 
-        // POST: Customer/Orders/PlaceOrder
-        [HttpPost("PlaceOrder")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PlaceOrder(PlaceOrderViewModel request)
-        {
-            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
+        //// POST: Customer/Orders/PlaceOrder
+        //[HttpPost("PlaceOrder")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> PlaceOrder(PlaceOrderViewModel request)
+        //{
+        //    string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
 
-            if (!ModelState.IsValid)
-            {
-                return View("~/Views/Orders/PlaceOrder.cshtml", request);
-            }
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View("~/Views/Orders/PlaceOrder.cshtml", request);
+        //    }
 
-            var result = await _orderService.PlaceOrderAsync(userId, request);
-            if (result)
-            {
-                TempData["Success"] = "Order placed successfully.";
-                return RedirectToAction(nameof(Index));
-            }
+        //    var result = await _orderService.PlaceOrderAsync(userId, request);
+        //    if (result)
+        //    {
+        //        TempData["Success"] = "Order placed successfully.";
+        //        return RedirectToAction(nameof(Index));
+        //    }
 
-            TempData["Error"] = "Failed to place order.";
-            return View("~/Views/Orders/PlaceOrder.cshtml", request);
-        }
+        //    TempData["Error"] = "Failed to place order.";
+        //    return View("~/Views/Orders/PlaceOrder.cshtml", request);
+        //}
 
         // DELETE: Customer/Orders/Delete/{id}
         [HttpPost("Delete/{id}")]
@@ -97,6 +97,44 @@ namespace GroceryShopSystem.Controllers.Customer
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: /Orders/OrderForm
+        [HttpPost("OrderForm")]
+        public async Task<IActionResult> OrderForm()
+        {
+            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Replace with current user ID
+            var order = await _orderService.ProceedToCheckoutAsync(userId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Order = order;
+            return View("~/Views/Orders/OrderForm.cshtml", new PlaceOrderViewModel());
+        }
+
+        [HttpPost("ConfirmOrder")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmOrder(PlaceOrderViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/Orders/OrderForm.cshtml", model);
+            }
+
+            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2";
+
+            var result = await _orderService.PlaceOrderAsync(userId, model);
+
+            if (result)
+            {
+                TempData["Success"] = "Order confirmed successfully!";
+                return RedirectToAction("Index");
+            }
+
+            TempData["Error"] = "Failed to confirm order.";
+            return View("~/Views/Orders/OrderForm.cshtml", model);
         }
     }
 }

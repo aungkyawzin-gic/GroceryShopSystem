@@ -39,6 +39,7 @@ namespace GroceryShopSystem.Controllers
             ViewData["CategoryList"] = new SelectList(categories, "Id", "Title", categoryId);
 
             return View(await products.ToListAsync());
+
         }
 
         public IActionResult Privacy()

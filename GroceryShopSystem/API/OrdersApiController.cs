@@ -192,8 +192,8 @@ namespace GroceryShopSystem.API
             return Ok(new { message = $"Order {order.OrderNo} marked as delivered." });
         }
 
-        // GET: api/orders/{userId}
-        [HttpGet("{userId}")]
+		// CUSTOMER GET: api/orders/{userId}
+		[HttpGet("{userId}")]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders(string userId)
         {
             var orders = await _context.Orders
@@ -206,7 +206,7 @@ namespace GroceryShopSystem.API
             return Ok(orders);
         }
 
-		// POST: api/orders/{userId}/checkout
+		// CUSTOMER POST: api/orders/{userId}/checkout
 		[HttpPost("{userId}/checkout")]
 		public async Task<IActionResult> ProceedToCheckout(string userId)
 		{
@@ -237,7 +237,8 @@ namespace GroceryShopSystem.API
 				TotalPrice = 0,
 				ShippingPrice = 0,
 				Tax = 0,
-				GrandTotalPrice = 0
+				GrandTotalPrice = 0,
+                Remark = "Default"
 			};
 
 			_context.Orders.Add(order);
@@ -262,16 +263,25 @@ namespace GroceryShopSystem.API
 
 			await _context.SaveChangesAsync();
 
-			return Ok(new
-			{
-				order.Id,
-				order.OrderNo,
-				order.Status,
-				Message = "Successfully proceed checkout."
-			});
+			return Ok(order);
 		}
 
-		// POST: api/orders/{userId}/place
+		// CUSTOMER GET: api/orders/{userId}/{orderId}/OrderItems
+		[HttpGet("{userId}/{orderId}/orderitems")]
+		public async Task<IActionResult> GetOrderItems(string userId, int orderId)
+		{
+			var order = await _context.Orders
+				.Include(o => o.OrderItems)
+					.ThenInclude(oi => oi.Product)
+				.FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);
+			if (order == null)
+			{
+				return NotFound(new { message = $"Order with ID {orderId} not found for this user." });
+			}
+			return Ok(order.OrderItems);
+		}
+
+		// CUSTOMER POST: api/orders/{userId}/place
 		[HttpPost("{userId}/place")]
 		public async Task<IActionResult> PlaceOrder(string userId, PlaceOrderViewModel placeOrderViewModel)
 		{
@@ -280,7 +290,7 @@ namespace GroceryShopSystem.API
 			if (user == null)
 				return NotFound("User not found.");
 
-			// Find the most recent pending order for this user
+			// Find the most recent pending order for this customer
 			var order = await _context.Orders
 				.Where(o => o.UserId == userId && o.Status == "pending")
 				.OrderByDescending(o => o.CreatedAt)
@@ -333,7 +343,6 @@ namespace GroceryShopSystem.API
 			order.ShippingPrice = shipping;
 			order.Tax = tax;
 			order.GrandTotalPrice = grandTotal;
-			order.Remark = placeOrderViewModel.Remark ?? string.Empty;
 			order.Status = "created";
 
 			_context.Orders.Update(order);
@@ -349,7 +358,7 @@ namespace GroceryShopSystem.API
 			});
 		}
 
-		// GET: api/orders/{userId}/details/{orderId}
+		// CUSTOMER GET: api/orders/{userId}/details/{orderId}
 		[HttpGet("{userId}/details/{orderId}")]
 
         public async Task<IActionResult> GetOrderDetails(string userId, int orderId)
@@ -365,8 +374,8 @@ namespace GroceryShopSystem.API
             return Ok(order);
         }
 
-        //DELETE: api/orders/{userId}/{orderId}
-        [HttpDelete("{userId}/{orderId}")]
+		// CUSTOMER DELETE: api/orders/{userId}/{orderId}
+		[HttpDelete("{userId}/{orderId}")]
         public async Task<IActionResult> DeleteOrder(string userId, int orderId)
         {
             var order = await _context.Orders

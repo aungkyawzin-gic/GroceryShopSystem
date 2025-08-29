@@ -63,6 +63,12 @@
         </div>
     </div>
     <div class="mt-3">
-        <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="btn btn-secondary">Back to Orders</a>
+        <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="btn btn-sm btn-secondary">Back to Orders</a>
+        @if (@Model.Status == "created")
+        {
+            <a asp-area="Admin" asp-controller="Orders" asp-action="ApproveOrder" asp-route-id="@Model.OrderId" class="btn btn-sm btn-outline btn-success">
+                <i class="bi bi-eye"></i> deliver
+            </a>
+        }
     </div>
 </div>

@@ -133,7 +133,7 @@ namespace GroceryShopSystem.API
         }
 
         // GET: api/orders/admin/search/{username}
-        [HttpGet("admin/search/{userid}")]
+        [HttpGet("admin/order/{userid}")]
         public async Task<ActionResult<IEnumerable<AdminOrderViewModel>>> GetOrdersByUserId(string userid)
         {
             var orders = await _context.Orders

@@ -56,6 +56,7 @@ namespace GroceryShopSystem.Services
 		//CUSTOMER: POST: api/orders/{userId}/checkout - Proceed to checkout
 		public async Task<Order?> ProceedToCheckoutAsync(string userId)
 		{
+			
 			var response = await _httpClient.PostAsync($"{API_BASE}/{userId}/checkout", null);
 
 			if (!response.IsSuccessStatusCode)

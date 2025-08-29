@@ -15,16 +15,7 @@
 
     <div class="row mb-4">
         <div class="col-md-6">
-            <form method="get" class="d-flex gap-2">
-                <select name="categoryId" class="form-select" onchange="this.form.submit()">
-                    <option value="">All Categories</option>
-                    @foreach (var cat in categories)
-                    {
-                        var isSelected = selectedCategoryId == cat.Id.ToString() ? "selected" : "";
-                        <option value="@cat.Id">@cat.Title</option>
-                    }
-                </select>
-            </form>
+            
         </div>
 
         <div class="col-md-6 d-flex justify-content-end gap-2">

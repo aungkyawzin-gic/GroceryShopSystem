@@ -18,33 +18,28 @@ namespace GroceryShopSystem.Controllers
 
         //[Authorize]
         public async Task<IActionResult> Index(string sortOrder, int? categoryId)
-{
-    if (User.IsInRole("Admin"))
-        ViewData["Layout"] = "_LayoutAdmin";
-    else
-        ViewData["Layout"] = "_LayoutUser";
+        {
+            ViewData["PriceSort"] = string.IsNullOrEmpty(sortOrder) || sortOrder == "PriceDesc" ? "PriceAsc" : "PriceDesc";
+            ViewData["AlphaSort"] = string.IsNullOrEmpty(sortOrder) || sortOrder == "AlphaDesc" ? "AlphaAsc" : "AlphaDesc";
 
-    ViewData["PriceSort"] = string.IsNullOrEmpty(sortOrder) || sortOrder == "PriceDesc" ? "PriceAsc" : "PriceDesc";
-    ViewData["AlphaSort"] = string.IsNullOrEmpty(sortOrder) || sortOrder == "AlphaDesc" ? "AlphaAsc" : "AlphaDesc";
+            var products = _context.Products.Include(p => p.Category).AsQueryable();
+            if (categoryId.HasValue)
+                products = products.Where(p => p.CategoryId == categoryId.Value);
 
-    var products = _context.Products.Include(p => p.Category).AsQueryable();
-    if (categoryId.HasValue)
-        products = products.Where(p => p.CategoryId == categoryId.Value);
+            products = sortOrder switch
+            {
+                "PriceAsc" => products.OrderBy(p => p.Price),
+                "PriceDesc" => products.OrderByDescending(p => p.Price),
+                "AlphaAsc" => products.OrderBy(p => p.Title),
+                "AlphaDesc" => products.OrderByDescending(p => p.Title),
+                _ => products.OrderBy(p => p.Id)
+            };
 
-    products = sortOrder switch
-    {
-        "PriceAsc" => products.OrderBy(p => p.Price),
-        "PriceDesc" => products.OrderByDescending(p => p.Price),
-        "AlphaAsc" => products.OrderBy(p => p.Title),
-        "AlphaDesc" => products.OrderByDescending(p => p.Title),
-        _ => products.OrderBy(p => p.Id)
-    };
+            var categories = await _context.Categories.ToListAsync();
+            ViewData["CategoryList"] = new SelectList(categories, "Id", "Title", categoryId);
 
-    var categories = await _context.Categories.ToListAsync();
-    ViewData["CategoryList"] = new SelectList(categories, "Id", "Title", categoryId);
-
-    return View(await products.ToListAsync());
-}
+            return View(await products.ToListAsync());
+        }
 
         public IActionResult Privacy()
         {

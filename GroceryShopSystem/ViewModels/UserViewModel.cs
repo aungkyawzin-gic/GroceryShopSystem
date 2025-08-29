@@ -1,4 +1,6 @@
-﻿namespace GroceryShopSystem.ViewModels
+﻿using GroceryShopSystem.Models;
+
+namespace GroceryShopSystem.ViewModels
 {
     public class UserViewModel
     {

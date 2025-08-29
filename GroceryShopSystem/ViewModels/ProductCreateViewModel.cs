@@ -1,4 +1,6 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+
 namespace GroceryShopSystem.ViewModels
 {
     public class ProductCreateViewModel
@@ -10,6 +12,7 @@ namespace GroceryShopSystem.ViewModels
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public int Quantity { get; set; }
+        [Required(ErrorMessage = "Product image is required")]
         public IFormFile? ImageFile { get; set; }
     }
 

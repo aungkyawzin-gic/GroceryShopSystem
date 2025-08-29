@@ -53,6 +53,7 @@ builder.Services.AddHttpClient<CartApiServices>();
 builder.Services.AddHttpClient<CategoriesApiServices>();
 builder.Services.AddHttpClient<AccountApiServices>();
 builder.Services.AddHttpClient<AuthApiServices>();
+builder.Services.AddHttpClient<OrderApiService>();
 
 var app = builder.Build();
 

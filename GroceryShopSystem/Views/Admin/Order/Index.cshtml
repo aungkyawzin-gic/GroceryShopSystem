@@ -2,80 +2,71 @@
 @model IEnumerable<AdminOrderViewModel>
 
 @{
-    ViewData["Title"] = "My Orders";
+    ViewData["Title"] = "Orders List";
 }
 
 <div class="container my-5">
     <h2 class="mb-4 text-center fw-bold">@ViewData["Title"]</h2>
+    <div class="mb-3">
+        <form method="get" asp-action="Index" class="d-flex">
+            <input type="text" name="search" value="@Context.Request.Query["search"]"
+                   class="form-control me-2" placeholder="Search by Username" />
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="bi bi-search"></i> Search
+            </button>
+        </form>
+    </div>
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info text-center p-4">
-            You have no orders yet. <a asp-controller="Home" asp-action="Index" class="fw-bold">Shop Now</a>
-        </div>
-    }
-    else
-    {
-        <div class="mb-3">
-            <form method="get" asp-action="Index" class="d-flex">
-                <input type="text" name="search" value="@Context.Request.Query["search"]"
-                       class="form-control me-2" placeholder="Search by Username" />
-                <button type="submit" class="btn btn-outline-primary">
-                    <i class="bi bi-search"></i> Search
-                </button>
-            </form>
-        </div>
-
-        <div class="table-responsive shadow rounded-3">
-            <table class="table align-middle table-hover">
-                <thead class="table-">
+    <div class="table-responsive shadow rounded-3">
+        <table class="table align-middle table-hover">
+            <thead class="table-">
+                <tr>
+                    <th>#</th>
+                    <th>Order No</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Select((o, index) => new { Order = o, Index = index + 1 }))
+                {
                     <tr>
-                        <th>#</th>
-                        <th>Order No</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        <th>Total</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var order in Model.Select((o, index) => new { Order = o, Index = index + 1 }))
-                    {
-                        <tr>
-                            <td>@order.Index</td>
-                            <td class="fw-bold">@order.Order.OrderNo</td>
-                            <td>@order.Order.CreatedAt.ToString("MMM dd, yyyy")</td>
-                            <td>
-                                <span class="badge @GetStatusBadge(order.Order.Status)">
-                                    @order.Order.Status
-                                </span>
-                            </td>
-                            <td class="fw-bold">$@order.Order.GrandTotal.ToString("0.00")</td>
-                            <td>
-                                <a asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Order.OrderId" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-eye"></i> View
-                                </a>
+                        <td>@order.Index</td>
+                        <td class="fw-bold">@order.Order.OrderNo</td>
+                        <td>@order.Order.CreatedAt.ToString("MMM dd, yyyy")</td>
+                        <td>
+                            <span class="badge @GetStatusBadge(order.Order.Status)">
+                                @order.Order.Status
+                            </span>
+                        </td>
+                        <td class="fw-bold">$@order.Order.GrandTotal.ToString("0.00")</td>
+                        <td>
+                            <a asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Order.OrderId" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
 
-                                @if (order.Order.Status == "create")
-                                {                                    
-                                    <a asp-area="Admin" asp-controller="Orders" asp-action="ApproveOrder" asp-route-id="@order.Order.OrderId" class="btn btn-sm btn-outline btn-success">
-                                        <i class="bi bi-eye"></i> deliver
-                                    </a>
-                                }
-                                else
-                                {                                    
-                                    <a asp-area="Admin" asp-controller="Orders" aria-disabled="true" asp-action="ApproveOrder" asp-route-id="@order.Order.OrderId" class="btn btn-sm btn-outline btn-secondary">
-                                        <i class="bi bi-eye"></i> delivered
-                                    </a>
-                                }
-                                
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
+                            @if (order.Order.Status == "create")
+                            {
+                                <a asp-area="Admin" asp-controller="Orders" asp-action="ApproveOrder" asp-route-id="@order.Order.OrderId" class="btn btn-sm btn-outline btn-success">
+                                    <i class="bi bi-eye"></i> deliver
+                                </a>
+                            }
+                            @if (order.Order.Status == "delivered")
+                            {
+                                <span class="btn btn-sm btn-outline btn-secondary">
+                                    <i class="bi bi-eye"></i> delivered
+                                </span>
+                            }
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
 </div>
 
 @functions {
@@ -84,7 +75,9 @@
         return status.ToLower() switch
         {
             "create" => "bg-warning text-dark",
-            "delivered" => "bg-success"            
+            "delivered" => "bg-success",
+            "pending" => "bg-secondary",
+            _ => "bg-info"
         };
     }
 }

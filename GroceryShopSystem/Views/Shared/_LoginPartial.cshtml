@@ -6,6 +6,12 @@
 <ul class="navbar-nav">
     @if (isAuthenticated)
     {
+        if (User.IsInRole("Customer"))
+        {
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
+            </li>
+        }
         <li class="nav-item">
             <form id="logoutForm" asp-controller="Auth" asp-action="Logout" method="post" style="display:none;">
                 @Html.AntiForgeryToken()

@@ -4,8 +4,8 @@
     ViewData["Title"] = "My Profile";
 }
 
-<div class="d-flex justify-content-center align-items-center">
-    <div class="card shadow p-5 w-100" style="max-width: 700px; border-radius: 16px;">
+<div class="d-flex justify-content-center align-items-center"">
+    <div class="card shadow p-4" style="width: 100%; max-width: 700px; border-radius: 12px;">
         <h3 class="text-center mb-4">My Profile</h3>
 
         @if (TempData["Message"] != null)
@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="d-grid m-2">
+            <div class="d-grid mt-2 mb-2">
                 <button type="submit" class="btn btn-success">Save Changes</button>
             </div>
 

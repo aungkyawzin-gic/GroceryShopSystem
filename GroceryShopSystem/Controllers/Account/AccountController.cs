@@ -15,11 +15,13 @@ namespace GroceryShopSystem.Controllers.Account
 	{
 		private readonly AccountApiServices _accountApiServices;
 		private readonly ILogger<AccountController> _logger;
+		SignInManager<ApplicationUser> _signInManager;
 		const string AccountBase = "~/Views/Account/";
-		public AccountController(AccountApiServices accountApiServices, ILogger<AccountController> logger)
+		public AccountController(AccountApiServices accountApiServices, ILogger<AccountController> logger, SignInManager<ApplicationUser> signInManager)
 		{
 			_accountApiServices = accountApiServices;
 			_logger = logger;
+			_signInManager = signInManager;
 		}
 
 		//Get: Account/Register - shows the registration form
@@ -43,6 +45,7 @@ namespace GroceryShopSystem.Controllers.Account
 				if (newUser != null)
 				{
 					// Successfully registered and logged in
+					await _signInManager.SignInAsync(newUser, isPersistent: false);
 					return RedirectToAction("Index", "Home"); //goes to Home/Index
 				}
 				else

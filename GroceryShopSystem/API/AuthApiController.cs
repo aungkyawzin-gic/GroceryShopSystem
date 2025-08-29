@@ -40,14 +40,11 @@ namespace GroceryShopSystem.API
 				return Ok(new
 				{
 					message = "Login successful.",
-					user = new
-					{
-						user.Id,
-						user.Email,
-						user.UserName,
-						user.FullName
-					}
-				});
+                    Id = user.Id,
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    FullName = user.FullName
+                });
 			}
 
 			return Unauthorized(new { message = "Invalid email or password." });

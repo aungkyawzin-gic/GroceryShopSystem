@@ -1,52 +1,54 @@
 ﻿@model GroceryShopSystem.ViewModels.UserUpdateViewModel
+
 @{
     ViewData["Title"] = "My Profile";
 }
 
-<div class="container d-flex justify-content-center align-items-center">
-    <div class="card shadow-sm w-100" style="max-width: 600px;">
-        <div class="card-body p-4">
-            <h2 class="card-title mb-4 text-center">My Profile</h2>
+<div class="d-flex justify-content-center align-items-center">
+    <div class="card shadow p-5 w-100" style="max-width: 700px; border-radius: 16px;">
+        <h3 class="text-center mb-4">My Profile</h3>
 
-            @if (TempData["Message"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @TempData["Message"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Message"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
 
-            <form asp-action="Index" asp-controller="Profile" method="post" class="row g-3 needs-validation" novalidate>
-                <div class="col-12">
-                    <label asp-for="FullName" class="form-label">Full Name</label>
-                    <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
-                    <div class="invalid-feedback">
-                        <span asp-validation-for="FullName"></span>
-                    </div>
+        <form asp-action="Index" asp-controller="Profile" method="post" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label">Full Name</label>
+                <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
+                <div class="invalid-feedback">
+                    <span asp-validation-for="FullName"></span>
                 </div>
+            </div>
 
-                <div class="col-12">
-                    <label asp-for="DateOfBirth" class="form-label">Date of Birth</label>
-                    <input asp-for="DateOfBirth" type="date" class="form-control" />
-                    <div class="invalid-feedback">
-                        <span asp-validation-for="DateOfBirth"></span>
-                    </div>
+            <div class="mb-3">
+                <label asp-for="DateOfBirth" class="form-label">Date of Birth</label>
+                <input asp-for="DateOfBirth" type="date" class="form-control" />
+                <div class="invalid-feedback">
+                    <span asp-validation-for="DateOfBirth"></span>
                 </div>
+            </div>
 
-                <div class="col-12">
-                    <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
-                    <input asp-for="PhoneNumber" class="form-control" placeholder="Enter your phone number" />
-                    <div class="invalid-feedback">
-                        <span asp-validation-for="PhoneNumber"></span>
-                    </div>
+            <div class="mb-3">
+                <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                <input asp-for="PhoneNumber" class="form-control" placeholder="Enter your phone number" />
+                <div class="invalid-feedback">
+                    <span asp-validation-for="PhoneNumber"></span>
                 </div>
+            </div>
 
-                <div class="col-12 mt-3 d-flex justify-content-between">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
-                </div>
-            </form>
-        </div>
+            <div class="d-grid m-2">
+                <button type="submit" class="btn btn-success">Save Changes</button>
+            </div>
+
+            <div class="text-center">
+                <a asp-controller="Home" asp-action="Index" class="text-decoration-none">Back</a>
+            </div>
+        </form>
     </div>
 </div>
 

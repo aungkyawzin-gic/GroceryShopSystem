@@ -197,7 +197,8 @@ namespace GroceryShopSystem.API
 				TotalPrice = 0,
 				ShippingPrice = 0,
 				Tax = 0,
-				GrandTotalPrice = 0
+				GrandTotalPrice = 0,
+                Remark = "Default"
 			};
 
 			_context.Orders.Add(order);
@@ -240,7 +241,7 @@ namespace GroceryShopSystem.API
 			if (user == null)
 				return NotFound("User not found.");
 
-			// Find the most recent pending order for this user
+			// Find the most recent pending order for this customer
 			var order = await _context.Orders
 				.Where(o => o.UserId == userId && o.Status == "pending")
 				.OrderByDescending(o => o.CreatedAt)
@@ -293,7 +294,6 @@ namespace GroceryShopSystem.API
 			order.ShippingPrice = shipping;
 			order.Tax = tax;
 			order.GrandTotalPrice = grandTotal;
-			order.Remark = placeOrderViewModel.Remark ?? string.Empty;
 			order.Status = "created";
 
 			_context.Orders.Update(order);

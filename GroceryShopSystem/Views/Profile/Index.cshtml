@@ -16,7 +16,7 @@
                 </div>
             }
 
-            <form asp-action="Profile" method="post" class="row g-3 needs-validation" novalidate>
+            <form asp-action="Index" asp-controller="Profile" method="post" class="row g-3 needs-validation" novalidate>
                 <div class="col-12">
                     <label asp-for="FullName" class="form-label"></label>
                     <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />

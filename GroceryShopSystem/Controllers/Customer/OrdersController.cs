@@ -100,10 +100,11 @@ namespace GroceryShopSystem.Controllers.Customer
         }
 
         // GET: /Orders/OrderForm
-        [HttpPost("OrderForm")]
+        [HttpGet("OrderForm")]
+        //[HttpPost]
         public async Task<IActionResult> OrderForm()
         {
-            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Replace with current user ID
+            string userId = "4fe0a0f2-cc44-49b7-b48b-b63fbfd91403"; // Replace with current user ID
             var order = await _orderService.ProceedToCheckoutAsync(userId);
             if (order == null)
             {

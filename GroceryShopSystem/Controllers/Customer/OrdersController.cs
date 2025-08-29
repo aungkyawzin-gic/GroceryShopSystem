@@ -1,94 +1,104 @@
-﻿using GroceryShopSystem.Models;
+﻿using GroceryShopSystem.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using GroceryShopSystem.Models;
+using GroceryShopSystem.ViewModels;
 
 namespace GroceryShopSystem.Controllers.Customer
 {
     [Area("Customer")]
-    [Route("Order")]
+    [Route("Customer/Orders")]
     public class OrdersController : Controller
     {
-        [HttpGet("")]
-        public IActionResult Index()
+        private readonly OrderApiService _orderService;
+
+        public OrdersController(OrderApiService orderService)
         {
-            // Mock orders data
-            var orders = new List<Order>
+            _orderService = orderService;
+        }
+
+        // GET: Customer/Orders
+        [HttpGet("")]
+        public async Task<IActionResult> Index()
+        {
+            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
+            var orders = await _orderService.GetUserOrdersAsync(userId);
+
+            if (orders == null)
             {
-                new Order
-                {
-                    Id = 1,
-                    OrderNo = "ORD001",
-                    UserId = "user1",
-                    CreatedAt = DateTime.UtcNow.AddDays(-5),
-                    UpdatedAt = DateTime.UtcNow,
-                    Status = "create",
-                    TotalPrice = 50.00m,
-                    ShippingPrice = 5.00m,
-                    Tax = 2.00m,
-                    GrandTotalPrice = 57.00m,
-                    Remark = "First test order",
-                    OrderItems = new List<OrderItem>()
-                },
-                new Order
-                {
-                    Id = 2,
-                    OrderNo = "ORD002",
-                    UserId = "user1",
-                    CreatedAt = DateTime.UtcNow.AddDays(-3),
-                    UpdatedAt = DateTime.UtcNow,
-                    Status = "delivered",
-                    TotalPrice = 120.00m,
-                    ShippingPrice = 8.00m,
-                    Tax = 6.00m,
-                    GrandTotalPrice = 134.00m,
-                    Remark = "Delivered successfully",
-                    OrderItems = new List<OrderItem>()
-                },
-                new Order
-                {
-                    Id = 3,
-                    OrderNo = "ORD003",
-                    UserId = "user1",
-                    CreatedAt = DateTime.UtcNow.AddDays(-1),
-                    UpdatedAt = DateTime.UtcNow,
-                    Status = "pending",
-                    TotalPrice = 75.00m,
-                    ShippingPrice = 5.00m,
-                    Tax = 3.00m,
-                    GrandTotalPrice = 83.00m,
-                    Remark = "Waiting for shipment",
-                    OrderItems = new List<OrderItem>()
-                }
-            };
+                TempData["Error"] = "No orders found.";
+                return View("~/Views/Orders/Index.cshtml", new List<Order>());
+            }
 
             return View("~/Views/Orders/Index.cshtml", orders);
         }
+
+        // GET: Customer/Orders/Details/{id}
         [HttpGet("Details/{id}")]
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            // Mock order with items
-            var order = new Order
+            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
+            var order = await _orderService.GetOrderDetailsAsync(userId, id);
+
+            if (order == null)
             {
-                Id = id,
-                OrderNo = $"ORD00{id}",
-                UserId = "user1",
-                CreatedAt = DateTime.UtcNow.AddDays(-id),
-                UpdatedAt = DateTime.UtcNow,
-                Status = id % 2 == 0 ? "delivered" : "pending",
-                TotalPrice = 120,
-                ShippingPrice = 8,
-                Tax = 6,
-                GrandTotalPrice = 134,
-                Remark = "Sample order details",
-                OrderItems = new List<OrderItem>
-                {
-                    new OrderItem { Id = 1, ProductId = 101, Quantity = 2, PriceAtPurchase = 20, Product = new Product { Title = "Fresh Apples" } },
-                    new OrderItem { Id = 2, ProductId = 102, Quantity = 1, PriceAtPurchase = 50, Product = new Product { Title = "Organic Milk" } },
-                    new OrderItem { Id = 3, ProductId = 103, Quantity = 3, PriceAtPurchase = 10, Product = new Product { Title = "Whole Wheat Bread" } }
-                }
-            };
+                return NotFound();
+            }
 
             return View("~/Views/Orders/Details.cshtml", order);
         }
+
+        // GET: Customer/Orders/PlaceOrder
+        [HttpGet("PlaceOrder")]
+        public IActionResult PlaceOrder()
+        {
+            return View("~/Views/Orders/PlaceOrder.cshtml");
+        }
+
+        // POST: Customer/Orders/PlaceOrder
+        [HttpPost("PlaceOrder")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PlaceOrder(PlaceOrderViewModel request)
+        {
+            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
+
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/Orders/PlaceOrder.cshtml", request);
+            }
+
+            var result = await _orderService.PlaceOrderAsync(userId, request);
+            if (result)
+            {
+                TempData["Success"] = "Order placed successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            TempData["Error"] = "Failed to place order.";
+            return View("~/Views/Orders/PlaceOrder.cshtml", request);
+        }
+
+        // DELETE: Customer/Orders/Delete/{id}
+        [HttpPost("Delete/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
+            var result = await _orderService.DeleteOrderAsync(userId, id);
+
+            if (!result)
+            {
+                TempData["Error"] = "Failed to delete order.";
+            }
+            else
+            {
+                TempData["Success"] = "Order deleted successfully.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         // GET: /Order/OrderForm
         [HttpGet("OrderForm")]
         public IActionResult OrderForm()

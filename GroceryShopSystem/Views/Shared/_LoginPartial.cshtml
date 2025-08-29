@@ -9,6 +9,9 @@
         if (User.IsInRole("Customer"))
         {
             <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
             </li>
         }
@@ -23,6 +26,9 @@
     }
     else
     {
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </li>
         <li class="nav-item">
             <a class="nav-link" asp-area="Account" asp-controller="Account" asp-action="Login">Login</a>
         </li>

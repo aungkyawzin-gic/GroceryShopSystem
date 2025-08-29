@@ -43,15 +43,23 @@
                                     <i class="bi bi-arrow-left"></i> Back to List
                                 </a>
                                 <!-- Add to Cart POST form -->
-                                <form asp-area="Customer" asp-controller="Cart" asp-action="Add" method="post" class="d-inline ">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="productId" value="@Model.Id" />
-                                    <input type="hidden" name="quantity" value="1" />
-                                    <!-- Add to Cart Button -->
-                                    <button type="button" class="btn btn-primary btn-sm add-to-cart-btn" data-productid="@Model.Id">
-                                        <i class="bi bi-cart-plus"></i> Add To Cart
-                                    </button>
-                                </form>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <form asp-area="Customer" asp-controller="Cart" asp-action="Add" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@Model.Id" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="button" class="btn btn-primary btn-sm add-to-cart-btn" data-productid="@Model.Id">
+                                            <i class="bi bi-cart-plus"></i> Add
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-box-arrow-in-right"></i> Login to Add
+                                    </a>
+                                }
                             </div>
 
                             <hr class="my-4">

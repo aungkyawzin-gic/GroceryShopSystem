@@ -1,10 +1,9 @@
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using GroceryShopSystem.Data;
 using GroceryShopSystem.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace GroceryShopSystem.Controllers
 {
@@ -16,14 +15,11 @@ namespace GroceryShopSystem.Controllers
             _context = context;
         }
 
-        //[Authorize]
+        // Index will render products regardless of role
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("Admin"))
-                ViewData["Layout"] = "_LayoutAdmin";
-            else if (User.IsInRole("User"))
-                ViewData["Layout"] = "_LayoutUser";
-            return View(await _context.Products.ToListAsync());
+            var products = await _context.Products.ToListAsync();
+            return View(products);
         }
 
         public IActionResult Privacy()
@@ -34,7 +30,10 @@ namespace GroceryShopSystem.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }

@@ -5,9 +5,31 @@
 }
 
 <h1>Products List</h1>
+<div class="d-flex row">
+    <form method="get" asp-action="Index" class="row mb-3 g-2 d-flex col-md-9">
+        <div class="col-md-3">
+            <select name="categoryId" class="form-select form-select-sm" asp-items="ViewBag.Categories">
+                <option value="">-- All Categories --</option>
+            </select>
+        </div>   
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+        </div>
 
-<div class="d-flex justify-content-end mb-2">
-    <a asp-action="Create" class="btn btn-success">Create New</a>
+        
+    </form>
+
+    <div class="d-flex align-items-center justify-content-end mb-2 col-md-3">
+        <div class="col-md-auto me-2">
+            <a asp-action="Index"
+               asp-route-categoryId="@ViewBag.CurrentCategory"
+               asp-route-sortOrder="@ViewBag.NextSort"
+               class="btn btn-sm btn-outline-primary">
+                Sort by Price @(ViewBag.CurrentSort == "price_asc" ? "↓" : "↑")
+            </a>
+        </div>
+        <a asp-action="Create" class="btn btn-sm btn-success">Create New</a>
+    </div>
 </div>
 <div class="table-responsive shadow rounded-3">
     <table class="table align-middle table-hover">

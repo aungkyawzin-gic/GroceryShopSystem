@@ -12,7 +12,7 @@ namespace GroceryShopSystem.Controllers.Admin
 {
 
     [Area("Admin")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [Route("Admin/Products")]
     public class ProductsController : Controller
 

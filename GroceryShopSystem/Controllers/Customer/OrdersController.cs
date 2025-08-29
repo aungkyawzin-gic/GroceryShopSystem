@@ -128,8 +128,7 @@ namespace GroceryShopSystem.Controllers.Customer
             {
                 return View("~/Views/Orders/OrderForm.cshtml", model);
             }
-
-            //string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2";
+            
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var result = await _orderService.PlaceOrderAsync(userId, model);

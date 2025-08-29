@@ -2,6 +2,7 @@
 using GroceryShopSystem.Models;
 using GroceryShopSystem.Services;
 using GroceryShopSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GroceryShopSystem.Controllers.User
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     [Route("Admin/Users")]
     public class UsersController : Controller
     {

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GroceryShopSystem.Controllers.Admin
 {
     [Area("Admin")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [Route("Admin/Category")]
     public class CategoriesController : Controller
     {

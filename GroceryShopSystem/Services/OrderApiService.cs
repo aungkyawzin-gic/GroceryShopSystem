@@ -37,13 +37,13 @@ namespace GroceryShopSystem.Services
         // ADMIN: Search orders by userid
         public async Task<List<AdminOrderViewModel>?> SearchOrdersByUserIdAsync(string? userid)
         {
-            return await _httpClient.GetFromJsonAsync<List<AdminOrderViewModel>>($"{API_BASE}/search/{userid}");
+            return await _httpClient.GetFromJsonAsync<List<AdminOrderViewModel>>($"{API_BASE}/admin/order/{userid}");
         }
 
         // ADMIN: Set order status to "delivered"
         public async Task<bool> SetOrderStatusToDeliveredAsync(int orderId)
         {
-            var response = await _httpClient.PutAsync($"{API_BASE}/admin/{orderId}", null);
+            var response = await _httpClient.PutAsync($"{API_BASE}/admin/deliver/{orderId}", null);
             return response.IsSuccessStatusCode;
         }
 

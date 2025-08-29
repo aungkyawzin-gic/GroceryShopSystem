@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace GroceryShopSystem.Controllers.Admin
 {
     [Area("Admin")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [Route("Admin/Orders")]
     public class OrdersController : Controller
     {
@@ -24,73 +24,17 @@ namespace GroceryShopSystem.Controllers.Admin
         [HttpGet("")]
         public async Task<IActionResult> Index(string? name)
         {
-            //IEnumerable<AdminOrderViewModel>? orders; 
+            IEnumerable<AdminOrderViewModel>? orders;
 
-            var orders = new List<AdminOrderViewModel>
+
+            if (name != null)
             {
-                new AdminOrderViewModel
-            {
-                OrderId = 1,
-                OrderNo = "ORD001",
-                UserName = "user1",
-                CreatedAt = DateTime.UtcNow.AddDays(-5),
-                TotalPrice = 50.00m,
-                ShippingPrice = 5.00m,
-                Tax = 2.00m,
-                GrandTotal = 57.00m,
-                Status = "create",
-                Remark = "First test order",
-                Items = new List<OrderItemViewModel>
-                {
-                    new OrderItemViewModel { ProductName = "Apple", Quantity = 2, PriceAtPurchase = 20.00m },
-                    new OrderItemViewModel { ProductName = "Banana", Quantity = 3, PriceAtPurchase = 10.00m }
-                }
-            },
-            new AdminOrderViewModel
-            {
-                OrderId = 2,
-                OrderNo = "ORD002",
-                UserName = "user1",
-                CreatedAt = DateTime.UtcNow.AddDays(-3),
-                TotalPrice = 120.00m,
-                ShippingPrice = 8.00m,
-                Tax = 6.00m,
-                GrandTotal = 134.00m,
-                Status = "delivered",
-                Remark = "Delivered successfully",
-                Items = new List<OrderItemViewModel>
-                {
-                    new OrderItemViewModel { ProductName = "Orange", Quantity = 5, PriceAtPurchase = 50.00m },
-                    new OrderItemViewModel { ProductName = "Grapes", Quantity = 4, PriceAtPurchase = 70.00m }
-                }
-            },
-            new AdminOrderViewModel
-            {
-                OrderId = 3,
-                OrderNo = "ORD003",
-                UserName = "user2",
-                CreatedAt = DateTime.UtcNow.AddDays(-1),
-                TotalPrice = 75.00m,
-                ShippingPrice = 5.00m,
-                Tax = 3.00m,
-                GrandTotal = 83.00m,
-                Status = "delivered",
-                Remark = "Waiting for shipment",
-                Items = new List<OrderItemViewModel>
-                {
-                    new OrderItemViewModel { ProductName = "Mango", Quantity = 3, PriceAtPurchase = 45.00m },
-                    new OrderItemViewModel { ProductName = "Pineapple", Quantity = 1, PriceAtPurchase = 30.00m }
-                }
+                orders = await _orderApiService.SearchOrdersByUsernameAsync(name);
             }
-            };
-            //if (name != null)
-            //{
-            //    orders = await _orderApiService.SearchOrdersByUsernameAsync(name); 
-            //}
-            //else
-            //{
-            //    orders = await _orderApiService.GetAllOrdersAsync();
-            //}
+            else
+            {
+                orders = await _orderApiService.GetAllOrdersAsync();
+            }
 
             return View($"{AdminBase}Index.cshtml", orders);
         }
@@ -98,52 +42,13 @@ namespace GroceryShopSystem.Controllers.Admin
         [HttpGet("Users/{userid}")]
         public async Task<IActionResult> IndexByUserId(string? userid)
         {
-            //IEnumerable<AdminOrderViewModel>? orders; 
+            IEnumerable<AdminOrderViewModel>? orders = new List<AdminOrderViewModel>();
 
-            var orders = new List<AdminOrderViewModel>
+
+            if (userid != null)
             {
-                new AdminOrderViewModel
-            {
-                OrderId = 1,
-                OrderNo = "ORD001",
-                UserName = "user1",
-                CreatedAt = DateTime.UtcNow.AddDays(-5),
-                TotalPrice = 50.00m,
-                ShippingPrice = 5.00m,
-                Tax = 2.00m,
-                GrandTotal = 57.00m,
-                Status = "create",
-                Remark = "First test order",
-                Items = new List<OrderItemViewModel>
-                {
-                    new OrderItemViewModel { ProductName = "Apple", Quantity = 2, PriceAtPurchase = 20.00m },
-                    new OrderItemViewModel { ProductName = "Banana", Quantity = 3, PriceAtPurchase = 10.00m }
-                }
-            },
-            new AdminOrderViewModel
-            {
-                OrderId = 2,
-                OrderNo = "ORD002",
-                UserName = "user1",
-                CreatedAt = DateTime.UtcNow.AddDays(-3),
-                TotalPrice = 120.00m,
-                ShippingPrice = 8.00m,
-                Tax = 6.00m,
-                GrandTotal = 134.00m,
-                Status = "delivered",
-                Remark = "Delivered successfully",
-                Items = new List<OrderItemViewModel>
-                {
-                    new OrderItemViewModel { ProductName = "Orange", Quantity = 5, PriceAtPurchase = 50.00m },
-                    new OrderItemViewModel { ProductName = "Grapes", Quantity = 4, PriceAtPurchase = 70.00m }
-                }
-            }            
-            
-            };
-            //if (userid != null)
-            //{
-            //    orders = await _orderApiService.SearchOrdersByUserIdAsync(userid);
-            //}
+                orders = await _orderApiService.SearchOrdersByUserIdAsync(userid);
+            }
 
             return View($"{AdminBase}IndexByUser.cshtml", orders);
         }
@@ -166,7 +71,7 @@ namespace GroceryShopSystem.Controllers.Admin
         }
         
         // POST action to receive user input address
-        [HttpPost("{id}/Approve")]
+        [HttpGet("{id}/Approve")]
         public async Task<IActionResult> ApproveOrder(int? id)
         {
             if (id == null)

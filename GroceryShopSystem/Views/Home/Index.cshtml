@@ -3,44 +3,47 @@
 @{
     Layout = ViewData["Layout"]?.ToString() ?? "_Layout";
     ViewData["Title"] = "Home";
+
+    var categories = ViewData["Categories"] as List<GroceryShopSystem.Models.Category> ?? new List<GroceryShopSystem.Models.Category>();
+    var selectedCategoryId = ViewData["SelectedCategoryId"]?.ToString() ?? "";
+    var priceSort = ViewData["PriceSort"]?.ToString() ?? "PriceAsc";
+    var alphaSort = ViewData["AlphaSort"]?.ToString() ?? "AlphaAsc";
 }
 
 <div class="container my-5">
     <h2 class="mb-4 text-center fw-bold">Welcome to GIC Grocery Store</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            
+        </div>
+
+        <div class="col-md-6 d-flex justify-content-end gap-2">
+            <a asp-action="Index" asp-route-sortOrder="@priceSort" asp-route-categoryId="@selectedCategoryId" class="btn btn-outline-secondary btn-sm">Sort by Price</a>
+            <a asp-action="Index" asp-route-sortOrder="@alphaSort" asp-route-categoryId="@selectedCategoryId" class="btn btn-outline-secondary btn-sm">Sort Alphabetically</a>
+        </div>
+    </div>
+
     <div class="row g-4">
         @foreach (var product in Model)
         {
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="card shadow-sm border-0 rounded-3 h-100 product-card">
-                    <!-- Product Image -->
-                    <img src="@(string.IsNullOrEmpty(product.ImageUrl)
-                                                          ? "https://img.freepik.com/premium-vector/group-colorful-eggplant-are-displayed-white-background_1161162-387255.jpg"
-                                                          : product.ImageUrl)"
-                     class="card-img-top"
-                     alt="@product.Title"
-                     style="height:220px; object-fit:cover;"
-                     onerror="this.onerror=null; this.src='https://img.freepik.com/premium-vector/group-colorful-eggplant-are-displayed-white-background_1161162-387255.jpg';">
+                    <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "https://img.freepik.com/premium-vector/group-colorful-eggplant-are-displayed-white-background_1161162-387255.jpg" : product.ImageUrl)" 
+                         class="card-img-top" alt="@product.Title" style="height:220px; object-fit:cover;"
+                         onerror="this.onerror=null; this.src='https://img.freepik.com/premium-vector/group-colorful-eggplant-are-displayed-white-background_1161162-387255.jpg';">
 
-                    <!-- Card Body -->
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title mb-1">@product.Title</h5>
                         <p class="card-text text-muted small mb-2" style="min-height: 40px;">@product.Description</p>
-
                         <h5 class="text-success mb-3">$@product.Price</h5>
 
-                        <!-- Buttons -->
                         <div class="mt-auto d-flex justify-content-between">
-                            <!-- View Details -->
-                            <a asp-area="Customer" asp-controller="Products" asp-action="Index" asp-route-id="@product.Id" class="btn btn-outline-primary btn-sm">
-                                View Details
-                            </a>
-
-                            <!-- Add to Cart POST form -->
+                            <a asp-area="Customer" asp-controller="Products" asp-action="Index" asp-route-id="@product.Id" class="btn btn-outline-primary btn-sm">View Details</a>
                             <form asp-area="Customer" asp-controller="Cart" asp-action="Add" method="post" class="d-inline">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="productId" value="@product.Id" />
                                 <input type="hidden" name="quantity" value="1" />
-                                <!-- Add to Cart Button -->
                                 <button type="button" class="btn btn-primary btn-sm add-to-cart-btn" data-productid="@product.Id">
                                     <i class="bi bi-cart-plus"></i> Add
                                 </button>
@@ -49,67 +52,66 @@
                     </div>
                 </div>
             </div>
-                }
+        }
     </div>
 </div>
+
+<!-- Toast -->
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
     <div id="cart-toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
-            <div class="toast-body">
-                Item added to cart!
-            </div>
+            <div class="toast-body"> Item added to cart! </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
 </div>
+
 <script>
-        document.addEventListener("DOMContentLoaded", () => {
-        const toastEl = document.getElementById('cart-toast');
-        const toast = new bootstrap.Toast(toastEl);
+document.addEventListener("DOMContentLoaded", () => {
+    const toastEl = document.getElementById('cart-toast');
+    const toast = new bootstrap.Toast(toastEl);
 
-        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const productId = btn.dataset.productid;
-                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const productId = btn.dataset.productid;
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-                try {
-                    const response = await fetch('/Customer/Cart/Add', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: `__RequestVerificationToken=${encodeURIComponent(token)}&productId=${productId}&quantity=1`
-                    });
+            try {
+                const response = await fetch('/Customer/Cart/Add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `__RequestVerificationToken=${encodeURIComponent(token)}&productId=${productId}&quantity=1`
+                });
 
-                    if (response.ok) {
-                        toastEl.querySelector('.toast-body').textContent = "Item added to cart!";
-                        toast.show();
-                    } else {
-                        const result = await response.json();
-                        toastEl.classList.remove('bg-success');
-                        toastEl.classList.add('bg-danger');
-                        toastEl.querySelector('.toast-body').textContent = result.message || "Failed to add item.";
-                        toast.show();
-                    }
-                } catch (err) {
+                if (response.ok) {
+                    toastEl.classList.remove('bg-danger');
+                    toastEl.classList.add('bg-success');
+                    toastEl.querySelector('.toast-body').textContent = "Item added to cart!";
+                    toast.show();
+                } else {
+                    const result = await response.json();
                     toastEl.classList.remove('bg-success');
                     toastEl.classList.add('bg-danger');
-                    toastEl.querySelector('.toast-body').textContent = "Error adding item.";
+                    toastEl.querySelector('.toast-body').textContent = result.message || "Failed to add item.";
                     toast.show();
                 }
-            });
+            } catch (err) {
+                toastEl.classList.remove('bg-success');
+                toastEl.classList.add('bg-danger');
+                toastEl.querySelector('.toast-body').textContent = "Error adding item.";
+                toast.show();
+            }
         });
     });
+});
 </script>
 
-
 <style>
-    .product-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
 </style>

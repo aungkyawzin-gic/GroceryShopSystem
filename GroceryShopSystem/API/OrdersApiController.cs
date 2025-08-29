@@ -152,8 +152,8 @@ namespace GroceryShopSystem.API
             return Ok(new { message = $"Order {order.OrderNo} marked as delivered." });
         }
 
-        // GET: api/orders/{userId}
-        [HttpGet("{userId}")]
+		// CUSTOMER GET: api/orders/{userId}
+		[HttpGet("{userId}")]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders(string userId)
         {
             var orders = await _context.Orders
@@ -166,7 +166,7 @@ namespace GroceryShopSystem.API
             return Ok(orders);
         }
 
-		// POST: api/orders/{userId}/checkout
+		// CUSTOMER POST: api/orders/{userId}/checkout
 		[HttpPost("{userId}/checkout")]
 		public async Task<IActionResult> ProceedToCheckout(string userId)
 		{
@@ -223,16 +223,25 @@ namespace GroceryShopSystem.API
 
 			await _context.SaveChangesAsync();
 
-			return Ok(new
-			{
-				order.Id,
-				order.OrderNo,
-				order.Status,
-				Message = "Successfully proceed checkout."
-			});
+			return Ok(order);
 		}
 
-		// POST: api/orders/{userId}/place
+		// CUSTOMER GET: api/orders/{userId}/{orderId}/OrderItems
+		[HttpGet("{userId}/{orderId}/orderitems")]
+		public async Task<IActionResult> GetOrderItems(string userId, int orderId)
+		{
+			var order = await _context.Orders
+				.Include(o => o.OrderItems)
+					.ThenInclude(oi => oi.Product)
+				.FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);
+			if (order == null)
+			{
+				return NotFound(new { message = $"Order with ID {orderId} not found for this user." });
+			}
+			return Ok(order.OrderItems);
+		}
+
+		// CUSTOMER POST: api/orders/{userId}/place
 		[HttpPost("{userId}/place")]
 		public async Task<IActionResult> PlaceOrder(string userId, PlaceOrderViewModel placeOrderViewModel)
 		{
@@ -309,7 +318,7 @@ namespace GroceryShopSystem.API
 			});
 		}
 
-		// GET: api/orders/{userId}/details/{orderId}
+		// CUSTOMER GET: api/orders/{userId}/details/{orderId}
 		[HttpGet("{userId}/details/{orderId}")]
 
         public async Task<IActionResult> GetOrderDetails(string userId, int orderId)
@@ -325,8 +334,8 @@ namespace GroceryShopSystem.API
             return Ok(order);
         }
 
-        //DELETE: api/orders/{userId}/{orderId}
-        [HttpDelete("{userId}/{orderId}")]
+		// CUSTOMER DELETE: api/orders/{userId}/{orderId}
+		[HttpDelete("{userId}/{orderId}")]
         public async Task<IActionResult> DeleteOrder(string userId, int orderId)
         {
             var order = await _context.Orders

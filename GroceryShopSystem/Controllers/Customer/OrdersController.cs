@@ -1,9 +1,10 @@
-﻿using GroceryShopSystem.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using GroceryShopSystem.Models;
+using GroceryShopSystem.Services;
 using GroceryShopSystem.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GroceryShopSystem.Controllers.Customer
 {
@@ -22,7 +23,8 @@ namespace GroceryShopSystem.Controllers.Customer
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
+            //string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var orders = await _orderService.GetUserOrdersAsync(userId);
 
             if (orders == null)
@@ -38,7 +40,8 @@ namespace GroceryShopSystem.Controllers.Customer
         [HttpGet("Details/{id}")]
         public async Task<IActionResult> Details(int id)
         {
-            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
+            //string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var order = await _orderService.GetOrderDetailsAsync(userId, id);
 
             if (order == null)
@@ -84,7 +87,8 @@ namespace GroceryShopSystem.Controllers.Customer
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
+            //string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2"; // Temporary UserId
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _orderService.DeleteOrderAsync(userId, id);
 
             if (!result)
@@ -104,7 +108,8 @@ namespace GroceryShopSystem.Controllers.Customer
         //[HttpPost]
         public async Task<IActionResult> OrderForm()
         {
-            string userId = "4fe0a0f2-cc44-49b7-b48b-b63fbfd91403"; // Replace with current user ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //string userId = "4fe0a0f2-cc44-49b7-b48b-b63fbfd91403"; // Replace with current user ID
             var order = await _orderService.ProceedToCheckoutAsync(userId);
             if (order == null)
             {
@@ -124,7 +129,8 @@ namespace GroceryShopSystem.Controllers.Customer
                 return View("~/Views/Orders/OrderForm.cshtml", model);
             }
 
-            string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2";
+            //string userId = "4c776bb3-6d26-48eb-9a80-fe5fed95f9c2";
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var result = await _orderService.PlaceOrderAsync(userId, model);
 

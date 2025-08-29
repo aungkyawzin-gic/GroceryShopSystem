@@ -40,14 +40,23 @@
 
                         <div class="mt-auto d-flex justify-content-between">
                             <a asp-area="Customer" asp-controller="Products" asp-action="Index" asp-route-id="@product.Id" class="btn btn-outline-primary btn-sm">View Details</a>
-                            <form asp-area="Customer" asp-controller="Cart" asp-action="Add" method="post" class="d-inline">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="productId" value="@product.Id" />
-                                <input type="hidden" name="quantity" value="1" />
-                                <button type="button" class="btn btn-primary btn-sm add-to-cart-btn" data-productid="@product.Id">
-                                    <i class="bi bi-cart-plus"></i> Add
-                                </button>
-                            </form>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <form asp-area="Customer" asp-controller="Cart" asp-action="Add" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@product.Id" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="button" class="btn btn-primary btn-sm add-to-cart-btn" data-productid="@product.Id">
+                                        <i class="bi bi-cart-plus"></i> Add
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-box-arrow-in-right"></i> Login to Add
+                                </a>
+                            }
                         </div>
                     </div>
                 </div>

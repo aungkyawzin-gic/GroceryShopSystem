@@ -1,5 +1,6 @@
-﻿@model IEnumerable<GroceryShopSystem.Models.CartItem>
+﻿@model GroceryShopSystem.ViewModels.PlaceOrderViewModel
 @{
+    var order = ViewBag.Order as GroceryShopSystem.Models.Order;
     ViewData["Title"] = "Order Confirmation";
 }
 
@@ -7,43 +8,45 @@
     <h2 class="mb-4 text-center fw-bold">Confirm Your Order</h2>
 
     <div class="row">
-        <!-- Cart Items -->
-        <div class="col-lg-8">
-            <div class="card shadow-sm rounded-3 mb-4">
+        <!-- Order Items Table -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm rounded-3">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Cart Items</h5>
+                    <h5 class="mb-0">Order Items</h5>
                 </div>
-                <div class="card-body">
-                    <table class="table table-hover align-middle">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Subtotal</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-end">Price</th>
+                                <th class="text-end">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model)
+                            @foreach (var item in order.OrderItems)
                             {
                                 <tr>
                                     <td>@item.Product.Title</td>
-                                    <td>@item.Quantity</td>
-                                    <td>$@item.Product.Price</td>
-                                    <td>$@(item.Product.Price* item.Quantity)</td>
+                                    <td class="text-center">@item.Quantity</td>
+                                    <td class="text-end">@item.PriceAtPurchase.ToString("C")</td>
+                                    <td class="text-end">@((item.PriceAtPurchase * item.Quantity).ToString("C"))</td>
                                 </tr>
                             }
                         </tbody>
                     </table>
-
-                    <div class="d-flex justify-content-end mt-3">
-                        <h5>Total: $@Model.Sum(i => i.Product.Price * i.Quantity)</h5>
+                    <div class="d-flex justify-content-end mt-3 px-3">
+                        @{
+                            var total = order.OrderItems.Sum(i => i.PriceAtPurchase * i.Quantity);
+                        }
+                        <h5>Total: @total.ToString("C")</h5>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Shipping Address Input -->
+        <!-- Shipping Address Form -->
         <div class="col-lg-4">
             <div class="card shadow-sm rounded-3">
                 <div class="card-header bg-success text-white">
@@ -51,20 +54,28 @@
                 </div>
                 <div class="card-body">
                     <form asp-action="ConfirmOrder" method="post">
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+                        <input type="hidden" asp-for="TotalPrice" value="@total" />
+
                         <div class="mb-3">
                             <label class="form-label">Street</label>
-                            <input type="text" name="Street" class="form-control" required placeholder="Enter street">
+                            <input asp-for="Street" class="form-control" placeholder="Enter street" />
+                            <span asp-validation-for="Street" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">City</label>
-                            <input type="text" name="City" class="form-control" required placeholder="Enter city">
+                            <input asp-for="City" class="form-control" placeholder="Enter city" />
+                            <span asp-validation-for="City" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">State</label>
-                            <input type="text" name="State" class="form-control" required placeholder="Enter state">
+                            <input asp-for="State" class="form-control" placeholder="Enter state" />
+                            <span asp-validation-for="State" class="text-danger"></span>
                         </div>
 
-                        <button type="submit" class="btn btn-success w-100">
+                        <button type="submit" class="btn btn-success w-100 mt-3">
                             <i class="bi bi-check-circle"></i> Confirm Order
                         </button>
                     </form>
@@ -73,3 +84,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

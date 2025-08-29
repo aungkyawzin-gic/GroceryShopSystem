@@ -191,6 +191,12 @@ namespace GroceryShopSystem.Controllers.Admin
                 }
 
                 imageUrl = "/uploads/" + fileName;
+            }            
+
+            var oldProduct = await _productServices.GetProductAsync(id);
+            if(imageUrl == null)
+            {
+                imageUrl = oldProduct?.ImageUrl;
             }
 
             var product = new Product

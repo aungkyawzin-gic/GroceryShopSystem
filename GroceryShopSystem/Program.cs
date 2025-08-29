@@ -33,6 +33,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.LogoutPath = "/Account/Logout";
 });
 
+// Add OrderSettings from appsettings.json
+builder.Services.Configure<OrderSettings>(builder.Configuration.GetSection("OrderSettings"));
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {

@@ -6,16 +6,7 @@
 }
 
 <div class="container my-5">
-    <h2 class="mb-4 text-center fw-bold">@ViewData["Title"]</h2>
-    <div class="mb-3">
-        <form method="get" asp-action="Index" class="d-flex">
-            <input type="text" name="search" value="@Context.Request.Query["search"]"
-                   class="form-control me-2" placeholder="Search by Username" />
-            <button type="submit" class="btn btn-outline-primary">
-                <i class="bi bi-search"></i> Search
-            </button>
-        </form>
-    </div>
+    <h2 class="mb-4 text-center fw-bold">@ViewData["Title"]</h2>   
 
     <div class="table-responsive shadow rounded-3">
         <table class="table align-middle table-hover">

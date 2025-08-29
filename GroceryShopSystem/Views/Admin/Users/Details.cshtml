@@ -10,16 +10,18 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">Email</dt>
-        <dd class="col-sm-10">@Model.Email</dd>
+        <dd class="col-sm-10">@(Model.Email ?? "NA")</dd>
 
         <dt class="col-sm-2">Phone</dt>
-        <dd class="col-sm-10">@Model.PhoneNumber</dd>
+        <dd class="col-sm-10">@(Model.PhoneNumber ?? "NA")</dd>
 
         <dt class="col-sm-2">Date of Birth</dt>
-        <dd class="col-sm-10">@Model.DateOfBirth?.ToString("yyyy-MM-dd")</dd>
+        <dd class="col-sm-10">@(Model.DateOfBirth?.ToString("yyyy-MM-dd") ?? "NA")</dd>
     </dl>
 </div>
 
 <p>
     <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <a asp-area="Admin" asp-controller="Orders" asp-route-id="@Model.Id" asp-action="Index" class="btn btn-secondary">Back to List</a>
+
 </p>

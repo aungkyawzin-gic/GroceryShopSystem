@@ -3,6 +3,7 @@ using GroceryShopSystem.Models;
 using GroceryShopSystem.Services;
 
 using GroceryShopSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace GroceryShopSystem.Controllers.Admin
 {
 
     [Area("Admin")]
+    //[Authorize(Roles = "Admin")]
     [Route("Admin/Products")]
     public class ProductsController : Controller
 

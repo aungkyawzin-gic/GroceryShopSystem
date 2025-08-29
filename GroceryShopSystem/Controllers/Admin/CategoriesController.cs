@@ -2,6 +2,7 @@
 using GroceryShopSystem.Models;
 using GroceryShopSystem.Services;
 using GroceryShopSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GroceryShopSystem.Controllers.Admin
 {
     [Area("Admin")]
+    //[Authorize(Roles = "Admin")]
     [Route("Admin/Category")]
     public class CategoriesController : Controller
     {
@@ -22,7 +24,6 @@ namespace GroceryShopSystem.Controllers.Admin
             _services = services;
             _context = context;
         }
-
 
         [HttpGet("")]
         // GET: CategoriesView

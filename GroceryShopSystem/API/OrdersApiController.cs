@@ -132,6 +132,46 @@ namespace GroceryShopSystem.API
             return Ok(result);
         }
 
+        // GET: api/orders/admin/search/{username}
+        [HttpGet("admin/search/{userid}")]
+        public async Task<ActionResult<IEnumerable<AdminOrderViewModel>>> GetOrdersByUserId(string userid)
+        {
+            var orders = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                .Where(o => o.User.Id == userid)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            if (!orders.Any())
+            {
+                return NotFound($"No orders found for user id with: {userid}");
+            }
+
+            var result = orders.Select(o => new AdminOrderViewModel
+            {
+                OrderId = o.Id,
+                OrderNo = o.OrderNo,
+                UserName = o.User.FullName,
+                CreatedAt = o.CreatedAt,
+                TotalPrice = o.TotalPrice,
+                ShippingPrice = o.ShippingPrice,
+                Tax = o.Tax,
+                GrandTotal = o.GrandTotalPrice,
+                Status = o.Status,
+                Remark = o.Remark,
+                Items = o.OrderItems.Select(i => new OrderItemViewModel
+                {
+                    ProductName = i.Product.Title,
+                    Quantity = i.Quantity,
+                    PriceAtPurchase = i.PriceAtPurchase
+                }).ToList()
+            }).ToList();
+
+            return Ok(result);
+        }
+
         // PUT: api/orders/admin/deliver/{id}
         [HttpPut("admin/deliver/{id:int}")]
         public async Task<IActionResult> SetOrderStatusToDelivered(int id)

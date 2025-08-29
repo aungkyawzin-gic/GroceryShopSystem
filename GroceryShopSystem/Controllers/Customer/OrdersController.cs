@@ -98,5 +98,28 @@ namespace GroceryShopSystem.Controllers.Customer
 
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: /Order/OrderForm
+        [HttpGet("OrderForm")]
+        public IActionResult OrderForm()
+        {
+            // Mock cart items
+            var cartItems = new List<CartItem>
+            {
+                new CartItem { Id = 1, Quantity = 2, Product = new Product { Title = "Fresh Apples", Price = 20 } },
+                new CartItem { Id = 2, Quantity = 1, Product = new Product { Title = "Organic Milk", Price = 50 } },
+                new CartItem { Id = 3, Quantity = 3, Product = new Product { Title = "Whole Wheat Bread", Price = 10 } }
+            };
+            return View($"~/Views/Orders/OrderForm.cshtml", cartItems);
+        }
+
+        // POST action to receive user input address
+        [HttpPost("ConfirmOrder")]
+        public IActionResult ConfirmOrder(Address shippingAddress)
+        {
+            // shippingAddress contains user input
+            TempData["Message"] = $"Order confirmed! Shipping to: {shippingAddress.Street}, {shippingAddress.City}, {shippingAddress.State}";
+            return RedirectToAction("Index", "Orders", new { area = "Customer" });
+        }
     }
 }

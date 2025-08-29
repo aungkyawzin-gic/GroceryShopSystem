@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using GroceryShopSystem.Models;
 using GroceryShopSystem.Services;
 using GroceryShopSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GroceryShopSystem.Controllers.Customer
 {
     [Area("Customer")]
     [Route("Customer/Orders")]
+    [Authorize(Roles = "Customer")]
     public class OrdersController : Controller
     {
         private readonly OrderApiService _orderService;

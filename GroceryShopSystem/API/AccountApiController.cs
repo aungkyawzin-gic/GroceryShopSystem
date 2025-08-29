@@ -82,13 +82,10 @@ namespace GroceryShopSystem.API
 				return Ok(new
 				{
 					message = "User registered successfully.",
-					user = new
-					{
-						newUser.Id,
-						newUser.Email,
-						newUser.UserName,
-						newUser.FullName
-					}
+					 Id = newUser.Id,
+                    Email = newUser.Email,
+                    UserName = newUser.UserName,
+                    FullName = newUser.FullName
 				});
 			}
 

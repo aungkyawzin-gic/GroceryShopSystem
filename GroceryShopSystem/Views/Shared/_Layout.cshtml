@@ -47,13 +47,10 @@
                             else if (User.IsInRole("Customer"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                                    <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">My Cart</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Cart" asp-action="Index">My Cart</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Orders" asp-action="MyOrders">My Orders</a>
+                                    <a class="nav-link" asp-area="Customer" asp-controller="Orders" asp-action="Index">My Orders</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
@@ -63,11 +60,14 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
+                            </li
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
                             </li>
                         }
                     </ul>
-                    <!-- Auth buttons: Login/Register or Logout --> 
+                    <!-- Auth buttons: Login/Register or Logout -->
                     @await Html.PartialAsync("_LoginPartial")
                 </div>
             </div>
